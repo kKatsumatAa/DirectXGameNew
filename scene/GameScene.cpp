@@ -3,6 +3,10 @@
 #include <cassert>
 #include "AxisIndicator.h"
 #include "PrimitiveDrawer.h"
+#include "Util.h"
+
+M4 m4(papa);
+Vec3 v({ 1,1,1,1 });
 
 GameScene::GameScene() {}
 
@@ -13,11 +17,13 @@ GameScene::~GameScene() {
 
 void GameScene::Initialize() {
 
+	CrossVec3M4(v, m4);
+
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 	debugText_ = DebugText::GetInstance();
-
+	
 	//ファイル名を指定してテクスチャを読み込む
 	textureHandle_ = TextureManager::Load("kasuga.png");
 	//3Dモデルの生成
@@ -45,6 +51,9 @@ void GameScene::Update() {
 	debugCamera_->Update();
 
 	
+
+	debugText_->SetPos(0, 0);
+	debugText_->Printf("%f %f %f %f", v.x, v.y, v.z, v.w);
 }
 
 void GameScene::Draw() {
