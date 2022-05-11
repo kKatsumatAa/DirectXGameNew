@@ -1,6 +1,6 @@
 #include "Util.h"
 
-void CrossVec3M4(Vec3& v, const M4& m4)
+void Vec3xM4(Vec3& v, const M4& m4)
 {
 	float v3[2][4] = {
 		{ v.x,v.y,v.z,v.w },
@@ -18,6 +18,20 @@ void CrossVec3M4(Vec3& v, const M4& m4)
 	v = { v3[1][0],v3[1][1] ,v3[1][2] ,v3[1][3] };
 }
 
-void NormVec3(Vec3& v, const M4& m4)
+void NormVec3(Vec3& v/*, const M4& m4*/)
 {
+	Vec3xM4(v, normal);
+}
+
+void TransposeM4(M4& m4)
+{
+	M4 M = m4;
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			m4.m[i][j] = M.m[j][i];
+		}
+	}
 }

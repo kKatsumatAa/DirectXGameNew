@@ -17,7 +17,8 @@ GameScene::~GameScene() {
 
 void GameScene::Initialize() {
 
-	CrossVec3M4(v, m4);
+	Vec3xM4(v, m4);
+	TransposeM4(m4);
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
@@ -54,6 +55,9 @@ void GameScene::Update() {
 
 	debugText_->SetPos(0, 0);
 	debugText_->Printf("%f %f %f %f", v.x, v.y, v.z, v.w);
+
+	debugText_->SetPos(0, 15);
+	debugText_->Printf("%f %f %f %f", m4.m[0][0], m4.m[0][1], m4.m[0][2], m4.m[0][3]);
 }
 
 void GameScene::Draw() {
@@ -86,12 +90,12 @@ void GameScene::Draw() {
 	model_->Draw(worldTransform_, debugCamera_->GetViewProjection(), textureHandle_);
 
 	//ライン描画が参照するビュープロジェクションを指定する（アドレス渡し）
-	for (int x = 0; x < 30; x++)
+	for (int x = 0; x < 31; x++)
 	{
 		PrimitiveDrawer::GetInstance()->DrawLine3d({ -30.f + 2.f * (float)x, 0, -30.f }, { -30.f + 2.f * (float)x, 0, 30.f }, { 0,0,0,1 });
 	}
 
-	for (int z = 0; z < 30; z++)
+	for (int z = 0; z < 31; z++)
 	{
 		PrimitiveDrawer::GetInstance()->DrawLine3d({ -30.f, 0, -30.f + 2.f * (float)z }, { 30.f, 0, -30.0f + 2.f * (float)z }, { 0,0,0,1 });
 	}

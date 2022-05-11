@@ -10,9 +10,12 @@ public:
 	float m[4][4];
 
 	//ä÷êî
+	M4();
 	M4(const float (*other)[4]);
-	void Normalize();
+	/*void Normalize();*/
 
+	//
+	M4& operator=(const M4& other);
 };
 
 const float normal[4][4] = {
@@ -23,9 +26,9 @@ const float normal[4][4] = {
 };
 
 const float papa[4][4] = {
-		{1,0,0,0},
-		{0,1,0,0},
-		{0,0,4,0},
-		{0,0,0,5}
+		{1,1,1,1},
+		{2,2,2,2},
+		{3,3,3,3},
+		{4,4,4,4}
 };
 
