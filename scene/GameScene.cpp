@@ -6,6 +6,7 @@
 #include "Util.h"
 
 M4 m4(papa);
+M4 m42(papa);
 Vec3 v({ 1,1,1,1 });
 
 GameScene::GameScene() {}
@@ -19,6 +20,7 @@ void GameScene::Initialize() {
 
 	Vec3xM4(v, m4);
 	TransposeM4(m4);
+	M4xM4(m4, m42);
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
