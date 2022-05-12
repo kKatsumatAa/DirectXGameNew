@@ -35,4 +35,5 @@ public:
 	Vec3& operator*=(const float& other);
 	Vec3 operator/(const float& other);
 	Vec3& operator/=(const float& other);
+	Vec3& operator=(const float& other);
 };

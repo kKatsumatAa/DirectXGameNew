@@ -2,7 +2,7 @@
 
 float Vec3::GetLength() const
 {
-	return sqrt(x * x + y * y + z * z);
+	return sqrtf(x * x + y * y + z * z);
 }
 
 void Vec3::Normalized()
@@ -102,6 +102,16 @@ Vec3& Vec3::operator/=(const float& other)
     this->x /= other;
     this->y /= other;
     this->z /= other;
+
+    return *this;
+}
+
+Vec3& Vec3::operator=(const Vec3& other)
+{
+	x = other.x;
+	y = other.y;
+	z = other.z;
+	w = other.w;
 
     return *this;
 }
