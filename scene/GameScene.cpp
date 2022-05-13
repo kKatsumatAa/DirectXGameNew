@@ -5,9 +5,10 @@
 #include "PrimitiveDrawer.h"
 #include "Util.h"
 
-M4 m4(papa);
-M4 m42(papa);
-Vec3 v({ 1,1,1,1 });
+//M4 m4(papa);
+//M4 m42(papa);
+//Vec3 v({ 1,1,1,1 });
+//Vec3 v2({ 2,3,4,1 });
 
 GameScene::GameScene() {}
 
@@ -18,9 +19,10 @@ GameScene::~GameScene() {
 
 void GameScene::Initialize() {
 
-	Vec3xM4(v, m4);
-	TransposeM4(m4);
-	M4xM4(m4, m42);
+	//Vec3xM4(v, m4);
+	//TransposeM4(m4);
+	//M4xM4(m4, m42);
+	//v = v.Cross(v2);
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
@@ -55,11 +57,11 @@ void GameScene::Update() {
 
 	
 
-	debugText_->SetPos(0, 0);
+	/*debugText_->SetPos(0, 0);
 	debugText_->Printf("%f %f %f %f", v.x, v.y, v.z, v.w);
 
 	debugText_->SetPos(0, 15);
-	debugText_->Printf("%f %f %f %f", m4.m[0][0], m4.m[0][1], m4.m[0][2], m4.m[0][3]);
+	debugText_->Printf("%f %f %f %f", m4.m[0][0], m4.m[0][1], m4.m[0][2], m4.m[0][3]);*/
 }
 
 void GameScene::Draw() {
