@@ -113,3 +113,8 @@ float AngletoRadi(const float& angle)
 {
 	return angle * pi / 180;
 }
+
+float RaditoAngle(const float& radian)
+{
+	return radian / pi * 180;
+}
