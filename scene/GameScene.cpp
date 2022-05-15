@@ -5,11 +5,6 @@
 #include "PrimitiveDrawer.h"
 #include "Util.h"
 
-//M4 m4(papa);
-//M4 m42(papa);
-//Vec3 v({ 1,1,1,1 });
-//Vec3 v2({ 2,3,4,1 });
-
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
@@ -18,11 +13,6 @@ GameScene::~GameScene() {
 }
 
 void GameScene::Initialize() {
-
-	//Vec3xM4(v, m4);
-	//TransposeM4(m4);
-	//M4xM4(m4, m42);
-	//v = v.Cross(v2);
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
@@ -50,6 +40,34 @@ void GameScene::Initialize() {
 	//ライン描画が参照するビュープロジェクションを指定する（アドレス渡し）
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&debugCamera_->GetViewProjection());
 	
+	//変換行列
+	//スケール
+	worldTransform_.scale_ = { 5,5,5 };
+	Matrix4 matScale;
+	SetScaleMatrix(matScale, worldTransform_.scale_);
+
+	//回転
+	worldTransform_.rotation_ = { 3.14f / 4.f, 3.14f / 4.f, 3.14f / 4.f };
+	//z回転行列
+	Matrix4 matRot, matRotX, matRotY, matRotZ;
+	SetRotationMatrix(matRotX, worldTransform_.rotation_.x, 'x');
+	SetRotationMatrix(matRotY, worldTransform_.rotation_.y, 'y');
+	SetRotationMatrix(matRotZ, worldTransform_.rotation_.z, 'z');
+	matRot = /*matRotZ **/ matRotX * matRotY;
+
+	//平行移動
+	worldTransform_.translation_ = { 10,10,10 };
+	Matrix4 matTrans = MathUtility::Matrix4Identity();
+	SetTranslationMatrix(matTrans, worldTransform_.translation_);
+	worldTransform_.matWorld_ = {
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		0,0,0,1,
+	};
+	Matrix4xMatrix4(worldTransform_.matWorld_, matScale * matRot * matTrans);
+
+	worldTransform_.TransferMatrix();
 }
 
 void GameScene::Update() {
