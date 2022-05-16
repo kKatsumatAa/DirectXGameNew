@@ -60,6 +60,11 @@ class GameScene {
 	//デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
 
+	//ワールドトランスフォーム
+	WorldTransform worldTransforms_[100];
+
+	float viewAngle = 0.0f;
+
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
