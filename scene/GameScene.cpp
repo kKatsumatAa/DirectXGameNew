@@ -4,7 +4,6 @@
 #include "AxisIndicator.h"
 #include "PrimitiveDrawer.h"
 #include "Util.h"
-#include <random>
 
 GameScene::GameScene() {}
 
@@ -14,15 +13,6 @@ GameScene::~GameScene() {
 }
 
 void GameScene::Initialize() {
-	//乱数シード生成器
-	std::random_device seed_gen;
-	//メルセンヌツイスター
-	std::mt19937_64 engine(seed_gen());
-	//乱数範囲
-	std::uniform_real_distribution<float> posDist(-10.0f, 10.0f);
-	std::uniform_real_distribution<float> rotDist(0.0f, pi*2);
-	//乱数エンジンを渡し、指定範囲からランダムな数値を得る
-	//float value = dist(engine);
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
@@ -36,6 +26,8 @@ void GameScene::Initialize() {
 
 	//ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
+	//ビュープロジェクションの初期化
+	viewProjection_.Initialize();
 
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
@@ -43,87 +35,51 @@ void GameScene::Initialize() {
 	//軸方向表示の表示を有効にする
 	AxisIndicator::GetInstance()->SetVisible(true);
 	//軸方向表示が参照するビュープロジェクションを指定する（アドレス渡し）
-	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 
 	//ライン描画が参照するビュープロジェクションを指定する（アドレス渡し）
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&debugCamera_->GetViewProjection());
 	
+	//変換行列
+	//スケール
+	worldTransform_.scale_ = { 5,5,5 };
+	Matrix4 matScale;
+	SetScaleMatrix(matScale, worldTransform_.scale_);
 
-	for (WorldTransform& i : worldTransforms_)
-	{
-		i.Initialize();
+	//回転
+	worldTransform_.rotation_ = { 3.14f / 4.f, 3.14f / 4.f, 3.14f / 4.f };
+	//z回転行列
+	Matrix4 matRot, matRotX, matRotY, matRotZ;
+	SetRotationMatrix(matRotX, worldTransform_.rotation_.x, 'x');
+	SetRotationMatrix(matRotY, worldTransform_.rotation_.y, 'y');
+	SetRotationMatrix(matRotZ, worldTransform_.rotation_.z, 'z');
+	matRot = /*matRotZ **/ matRotX * matRotY;
 
-		//変換行列
-		//スケール
-		i.scale_ = { 1,1,1 };
-		Matrix4 matScale;
-		SetScaleMatrix(matScale, i.scale_);
+	//平行移動
+	worldTransform_.translation_ = { 10,10,10 };
+	Matrix4 matTrans = MathUtility::Matrix4Identity();
+	SetTranslationMatrix(matTrans, worldTransform_.translation_);
+	worldTransform_.matWorld_ = {
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		0,0,0,1,
+	};
+	Matrix4xMatrix4(worldTransform_.matWorld_, matScale * matRot * matTrans);
 
-		//回転
-		i.rotation_ = 
-		{ rotDist(engine), rotDist(engine), rotDist(engine) };
-		//回転行列
-		Matrix4 matRot, matRotX, matRotY, matRotZ;
-		SetRotationMatrix(matRotX, i.rotation_.x, 'x');
-		SetRotationMatrix(matRotY, i.rotation_.y, 'y');
-		SetRotationMatrix(matRotZ, i.rotation_.z, 'z');
-		matRot = matRotZ * matRotX * matRotY;
-
-		//平行移動
-		i.translation_ = 
-		{ posDist(engine),posDist(engine),posDist(engine) };
-		Matrix4 matTrans = MathUtility::Matrix4Identity();
-		SetTranslationMatrix(matTrans, i.translation_);
-		i.matWorld_ = {
-			1,0,0,0,
-			0,1,0,0,
-			0,0,1,0,
-			0,0,0,1,
-		};
-		Matrix4xMatrix4(i.matWorld_, matScale * matRot * matTrans);
-
-		i.TransferMatrix();
-	}
-
-	//viewProjection_.eye = { 0,0,-10 };
-	viewProjection_.target = { 10,0,0 };
-	viewProjection_.up = { cosf(pi/4.f),sinf(pi / 4.f),0};
-	//ビュープロジェクションの初期化
-	viewProjection_.Initialize();
+	worldTransform_.TransferMatrix();
 }
 
 void GameScene::Update() {
-	/*debugCamera_->Update();*/
+	debugCamera_->Update();
 
-	const float kEyeSpeed = 0.2f;
-	if (input_->PushKey(DIK_W)) viewProjection_.eye.z += kEyeSpeed;
-	else if (input_->PushKey(DIK_S)) viewProjection_.eye.z -= kEyeSpeed;
+	
 
-	if (input_->PushKey(DIK_A)) viewProjection_.target.x -= kEyeSpeed;
-	else if (input_->PushKey(DIK_D)) viewProjection_.target.x += kEyeSpeed;
+	/*debugText_->SetPos(0, 0);
+	debugText_->Printf("%f %f %f %f", v.x, v.y, v.z, v.w);
 
-	//up回転
-	const float kUprotSpeed = 0.05f;
-	if (input_->PushKey(DIK_SPACE))
-	{
-		viewAngle += kUprotSpeed;
-		viewAngle= fmodf(viewAngle,pi*2.f);
-	}
-	viewProjection_.up = { cosf(viewAngle), sinf(viewAngle), 0.0f};
-	viewProjection_.UpdateMatrix();
-
-	//デバッグ用表示
-	debugText_->SetPos(50, 50);
-	debugText_->Printf("eye:(%f,%f,%f)",
-		viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
-
-	debugText_->SetPos(50, 70);
-	debugText_->Printf("target:(%f,%f,%f)",
-		viewProjection_.target.x, viewProjection_.target.y, viewProjection_.target.z);
-
-	debugText_->SetPos(50, 90);
-	debugText_->Printf("target:(%f,%f,%f)",
-		viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);
+	debugText_->SetPos(0, 15);
+	debugText_->Printf("%f %f %f %f", m4.m[0][0], m4.m[0][1], m4.m[0][2], m4.m[0][3]);*/
 }
 
 void GameScene::Draw() {
@@ -143,6 +99,17 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 	// 深度バッファクリア
 	dxCommon_->ClearDepthBuffer();
+#pragma endregion
+
+#pragma region 3Dオブジェクト描画
+	// 3Dオブジェクト描画前処理
+	Model::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに3Dオブジェクトの描画処理を追加できる
+	/// </summary>
+	//3dモデル描画
+	model_->Draw(worldTransform_, debugCamera_->GetViewProjection(), textureHandle_);
 
 	//ライン描画が参照するビュープロジェクションを指定する（アドレス渡し）
 	for (int x = 0; x < 31; x++)
@@ -154,21 +121,6 @@ void GameScene::Draw() {
 	{
 		PrimitiveDrawer::GetInstance()->DrawLine3d({ -30.f, 0, -30.f + 2.f * (float)z }, { 30.f, 0, -30.0f + 2.f * (float)z }, { 0,0,0,1 });
 	}
-#pragma endregion
-
-#pragma region 3Dオブジェクト描画
-	// 3Dオブジェクト描画前処理
-	Model::PreDraw(commandList);
-
-	/// <summary>
-	/// ここに3Dオブジェクトの描画処理を追加できる
-	/// </summary>
-	//3dモデル描画
-	for (WorldTransform& worldTransform_ : worldTransforms_)
-	{
-		model_->Draw(worldTransform_, viewProjection_, textureHandle_);
-	}
-	
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
