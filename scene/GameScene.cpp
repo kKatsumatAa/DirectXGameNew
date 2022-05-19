@@ -84,10 +84,9 @@ void GameScene::Initialize() {
 
 		i.TransferMatrix();
 	}
+	//カメラ垂直方向視野角
+	viewProjection_.fovAngleY = AngletoRadi(10.0f);
 
-	//viewProjection_.eye = { 0,0,-10 };
-	viewProjection_.target = { 10,0,0 };
-	viewProjection_.up = { cosf(pi / 4.f),sinf(pi / 4.f),0 };
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 }
@@ -95,35 +94,57 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 	/*debugCamera_->Update();*/
 
-	const float kEyeSpeed = 0.2f;
-	if (input_->PushKey(DIK_W)) viewProjection_.eye.z += kEyeSpeed;
-	else if (input_->PushKey(DIK_S)) viewProjection_.eye.z -= kEyeSpeed;
+	//const float kEyeSpeed = 0.2f;
+	//if (input_->PushKey(DIK_W)) viewProjection_.eye.z += kEyeSpeed;
+	//else if (input_->PushKey(DIK_S)) viewProjection_.eye.z -= kEyeSpeed;
 
-	if (input_->PushKey(DIK_A)) viewProjection_.target.x -= kEyeSpeed;
-	else if (input_->PushKey(DIK_D)) viewProjection_.target.x += kEyeSpeed;
+	//if (input_->PushKey(DIK_A)) viewProjection_.target.x -= kEyeSpeed;
+	//else if (input_->PushKey(DIK_D)) viewProjection_.target.x += kEyeSpeed;
 
-	//up回転
-	const float kUprotSpeed = 0.05f;
-	if (input_->PushKey(DIK_SPACE))
+	////up回転
+	//const float kUprotSpeed = 0.05f;
+	//if (input_->PushKey(DIK_SPACE))
+	//{
+	//	viewAngle += kUprotSpeed;
+	//	viewAngle = fmodf(viewAngle, pi * 2.f);
+	//}
+	//viewProjection_.up = { cosf(viewAngle), sinf(viewAngle), 0.0f };
+	//viewProjection_.UpdateMatrix();
+
+	////デバッグ用表示
+	//debugText_->SetPos(50, 50);
+	//debugText_->Printf("eye:(%f,%f,%f)",
+	//	viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
+
+	//debugText_->SetPos(50, 70);
+	//debugText_->Printf("target:(%f,%f,%f)",
+	//	viewProjection_.target.x, viewProjection_.target.y, viewProjection_.target.z);
+
+	//debugText_->SetPos(50, 90);
+	//debugText_->Printf("target:(%f,%f,%f)",
+	//	viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);
+
+	//Fov変更処理
 	{
-		viewAngle += kUprotSpeed;
-		viewAngle = fmodf(viewAngle, pi * 2.f);
+		if (input_->PushKey(DIK_UP))
+		{
+			viewProjection_.fovAngleY += 0.01f;
+			viewProjection_.fovAngleY = min(viewProjection_.fovAngleY, pi);
+		}
+		else if (input_->PushKey(DIK_DOWN))
+		{
+			viewProjection_.fovAngleY -= 0.01f;
+			viewProjection_.fovAngleY = max(viewProjection_.fovAngleY, 0.01f);
+		}
+		
 	}
-	viewProjection_.up = { cosf(viewAngle), sinf(viewAngle), 0.0f };
 	viewProjection_.UpdateMatrix();
 
 	//デバッグ用表示
 	debugText_->SetPos(50, 50);
-	debugText_->Printf("eye:(%f,%f,%f)",
-		viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
+	debugText_->Printf("fovangleY:%f",
+		RaditoAngle( viewProjection_.fovAngleY));
 
-	debugText_->SetPos(50, 70);
-	debugText_->Printf("target:(%f,%f,%f)",
-		viewProjection_.target.x, viewProjection_.target.y, viewProjection_.target.z);
-
-	debugText_->SetPos(50, 90);
-	debugText_->Printf("target:(%f,%f,%f)",
-		viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);
 }
 
 void GameScene::Draw() {

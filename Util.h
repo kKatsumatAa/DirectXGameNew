@@ -16,6 +16,6 @@ void SetRotationMatrix(Matrix4& m4, const float& angle, const char& axis);
 void SetTranslationMatrix(Matrix4& m4, const Vector3& v3);
 
 //ƒ‰ƒWƒAƒ“Œn
-const float pi = 3.141592;
+const float pi = 3.141592f;
 float AngletoRadi(const float& angle);
 float RaditoAngle(const float& radian);
