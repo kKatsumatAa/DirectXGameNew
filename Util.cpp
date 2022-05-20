@@ -1,4 +1,6 @@
 #include "Util.h"
+#include "MathUtility.h"
+#include <DirectXMath.h>
 
 //void Vector4xMatrix4(Vector4& v, const Matrix4& m4)
 //{
@@ -105,6 +107,70 @@ void SetTranslationMatrix(Matrix4& m4, const Vector3& v3)
 		0,0,1,0,
 		v3.x,v3.y,v3.z,1
 	};
+}
+
+void SetScaleRotTransMat(WorldTransform& world,
+	const Vector3& scale = Vector3(0, 0, 0),
+	const Vector3& rotation = Vector3(0, 0, 0),
+	const Vector3& translation = Vector3(0, 0, 0))
+{
+	//変換行列
+	//スケール
+	world.scale_ = scale;
+	Matrix4 matScale;
+	SetScaleMatrix(matScale, world.scale_);
+
+	//回転
+	world.rotation_ = rotation;
+	//z回転行列
+	Matrix4 matRot, matRotX, matRotY, matRotZ;
+	SetRotationMatrix(matRotX, world.rotation_.x, 'x');
+	SetRotationMatrix(matRotY, world.rotation_.y, 'y');
+	SetRotationMatrix(matRotZ, world.rotation_.z, 'z');
+	matRot = matRotZ * matRotX * matRotY;
+
+	//平行移動
+	world.translation_ = translation;
+	Matrix4 matTrans = MathUtility::Matrix4Identity();
+	SetTranslationMatrix(matTrans, world.translation_);
+	world.matWorld_ = normal;
+	Matrix4xMatrix4(world.matWorld_, matScale * matRot * matTrans);
+}
+
+void SetPareScaleRotTransMat(WorldTransform& world, const WorldTransform* worldParent)
+{
+	//子
+	 //変換行列
+	 //スケール
+	Matrix4 matScale;
+	SetScaleMatrix(matScale, world.scale_);
+
+	 //回転
+	 //回転行列
+	Matrix4 matRot, matRotX, matRotY, matRotZ;
+	SetRotationMatrix(matRotX, world.rotation_.x, 'x');
+	SetRotationMatrix(matRotY, world.rotation_.y, 'y');
+	SetRotationMatrix(matRotZ, world.rotation_.z, 'z');
+	matRot = matRotZ * matRotX * matRotY;
+
+	 //平行移動
+	Matrix4 matTrans = MathUtility::Matrix4Identity();
+	SetTranslationMatrix(matTrans, world.translation_);
+	world.matWorld_ = normal;
+
+	if (worldParent == nullptr)//world自体が親だったら（親がいない）
+	{
+		Matrix4xMatrix4(world.matWorld_,
+			matScale * matRot * matTrans);
+	}
+	else//world自体が子だったら（親がいる）
+	{
+		//matworldに入れる
+		Matrix4xMatrix4(world.matWorld_,
+			matScale * matRot * matTrans * worldParent->matWorld_);
+	}
+
+	world.TransferMatrix();
 }
 
 //-------------------------------------------------

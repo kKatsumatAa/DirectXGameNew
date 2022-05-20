@@ -63,7 +63,20 @@ class GameScene {
 	//ワールドトランスフォーム
 	WorldTransform worldTransforms_[100];
 
-	float viewAngle = 0.0f;
+	//パーツ
+	enum PartId {
+		kRoot,//大元
+		kSpine,//脊椎
+		kChest,//胸
+		kHead,//頭
+		kArmL,//左腕
+		kArmR,//右腕
+		kHip,//尻
+		kLegL,//左足
+		kLegR,//右足
+
+		kNumPartId
+	};
 
 	/// <summary>
 	/// ゲームシーン用

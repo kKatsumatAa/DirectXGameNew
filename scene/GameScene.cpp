@@ -48,123 +48,82 @@ void GameScene::Initialize() {
 	//ライン描画が参照するビュープロジェクションを指定する（アドレス渡し）
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
 
+	// 親(Root)
+		//ワールドトランスフォーム初期化
+	worldTransforms_[PartId::kRoot].Initialize();
 
-	for (WorldTransform& i : worldTransforms_)
-	{
-		i.Initialize();
+	//脊髄
+	// x,y,zの位置を設定
+	worldTransforms_[PartId::kSpine].translation_ = { 0, 4.5f, 0 };//ローカル座標
+	worldTransforms_[PartId::kSpine].parent_ = &worldTransforms_[PartId::kRoot];
+	worldTransforms_[PartId::kSpine].Initialize();
 
-		//変換行列
-		//スケール
-		i.scale_ = { 1,1,1 };
-		Matrix4 matScale;
-		SetScaleMatrix(matScale, i.scale_);
+	//上半身
+	//胸
+	worldTransforms_[PartId::kChest].translation_ = { 0, 2.0f, 0 }; //ローカル座標
+	worldTransforms_[PartId::kChest].parent_ = &worldTransforms_[PartId::kSpine];
+	worldTransforms_[PartId::kChest].Initialize();
+	//頭
+	worldTransforms_[PartId::kHead].translation_ = { 0, 4.5f, 0 }; //ローカル座標
+	worldTransforms_[PartId::kHead].parent_ = &worldTransforms_[PartId::kChest];
+	worldTransforms_[PartId::kHead].Initialize();
+	//左手
+	worldTransforms_[PartId::kArmL].translation_ = { 4.5f, 0, 0 }; //ローカル座標
+	worldTransforms_[PartId::kArmL].parent_ = &worldTransforms_[PartId::kChest];
+	worldTransforms_[PartId::kArmL].Initialize();
+	//右手
+	worldTransforms_[PartId::kArmR].translation_ = { -4.5f, 0, 0 }; //ローカル座標
+	worldTransforms_[PartId::kArmR].parent_ = &worldTransforms_[PartId::kChest];
+	worldTransforms_[PartId::kArmR].Initialize();
 
-		//回転
-		i.rotation_ =
-		{ rotDist(engine), rotDist(engine), rotDist(engine) };
-		//回転行列
-		Matrix4 matRot, matRotX, matRotY, matRotZ;
-		SetRotationMatrix(matRotX, i.rotation_.x, 'x');
-		SetRotationMatrix(matRotY, i.rotation_.y, 'y');
-		SetRotationMatrix(matRotZ, i.rotation_.z, 'z');
-		matRot = matRotZ * matRotX * matRotY;
+	//下半身
+	//尻
+	worldTransforms_[PartId::kHip].translation_ = { 0, -2.0f, 0 }; //ローカル座標
+	worldTransforms_[PartId::kHip].parent_ = &worldTransforms_[PartId::kSpine];
+	worldTransforms_[PartId::kHip].Initialize();
+	//左足
+	worldTransforms_[PartId::kLegL].translation_ = { 4.5f, -4.5f, 0 }; //ローカル座標
+	worldTransforms_[PartId::kLegL].parent_ = &worldTransforms_[PartId::kHip];
+	worldTransforms_[PartId::kLegL].Initialize();
+	//右足
+	worldTransforms_[PartId::kLegR].translation_ = { -4.5f, -4.5f, 0 }; //ローカル座標
+	worldTransforms_[PartId::kLegR].parent_ = &worldTransforms_[PartId::kHip];
+	worldTransforms_[PartId::kLegR].Initialize();
 
-		//平行移動
-		i.translation_ =
-		{ posDist(engine),posDist(engine),posDist(engine) };
-		Matrix4 matTrans = MathUtility::Matrix4Identity();
-		SetTranslationMatrix(matTrans, i.translation_);
-		i.matWorld_ = {
-			1,0,0,0,
-			0,1,0,0,
-			0,0,1,0,
-			0,0,0,1,
-		};
-		Matrix4xMatrix4(i.matWorld_, matScale * matRot * matTrans);
-
-		i.TransferMatrix();
-	}
-	//カメラ垂直方向視野角
-	//viewProjection_.fovAngleY = AngletoRadi(10.0f);
-	//アスペクト比
-	viewProjection_.aspectRatio = 1.0f;
-	//ニアクリップファークリップ
-	viewProjection_.nearZ = 52.0f;
-	viewProjection_.farZ = 53.0f;
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 }
 
 void GameScene::Update() {
-	/*debugCamera_->Update();*/
 
-	//const float kEyeSpeed = 0.2f;
-	//if (input_->PushKey(DIK_W)) viewProjection_.eye.z += kEyeSpeed;
-	//else if (input_->PushKey(DIK_S)) viewProjection_.eye.z -= kEyeSpeed;
-
-	//if (input_->PushKey(DIK_A)) viewProjection_.target.x -= kEyeSpeed;
-	//else if (input_->PushKey(DIK_D)) viewProjection_.target.x += kEyeSpeed;
-
-	////up回転
-	//const float kUprotSpeed = 0.05f;
-	//if (input_->PushKey(DIK_SPACE))
-	//{
-	//	viewAngle += kUprotSpeed;
-	//	viewAngle = fmodf(viewAngle, pi * 2.f);
-	//}
-	//viewProjection_.up = { cosf(viewAngle), sinf(viewAngle), 0.0f };
-	//viewProjection_.UpdateMatrix();
-
-	////デバッグ用表示
-	//debugText_->SetPos(50, 50);
-	//debugText_->Printf("eye:(%f,%f,%f)",
-	//	viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
-
-	//debugText_->SetPos(50, 70);
-	//debugText_->Printf("target:(%f,%f,%f)",
-	//	viewProjection_.target.x, viewProjection_.target.y, viewProjection_.target.z);
-
-	//debugText_->SetPos(50, 90);
-	//debugText_->Printf("target:(%f,%f,%f)",
-	//	viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);
-
-	//Fov変更処理
 	{
-		if (input_->PushKey(DIK_UP))
+		//移動
 		{
-			viewProjection_.fovAngleY += 0.01f;
-			viewProjection_.fovAngleY = min(viewProjection_.fovAngleY, pi);
+			Vector3 move = { (float)(input_->PushKey(DIK_RIGHT) - input_->PushKey(DIK_LEFT)),
+				(float)(input_->PushKey(DIK_UP) - input_->PushKey(DIK_DOWN)),
+				0 };
+			worldTransforms_[PartId::kRoot].translation_ += move;
 		}
-		else if (input_->PushKey(DIK_DOWN))
+		{//回転
+			worldTransforms_[0].rotation_ += { 0,
+				(float)(input_->PushKey(DIK_I) - input_->PushKey(DIK_U)) * 0.1f,
+				0 };
+			worldTransforms_[kHead].rotation_ += {0,
+				(float)(input_->PushKey(DIK_K) - input_->PushKey(DIK_J)) * 0.1f,
+				0 };
+		}
+		for (size_t i = 0; i < kNumPartId; i++)
 		{
-			viewProjection_.fovAngleY -= 0.01f;
-			viewProjection_.fovAngleY = max(viewProjection_.fovAngleY, 0.01f);
+			SetPareScaleRotTransMat(worldTransforms_[i],
+				worldTransforms_[i].parent_);
 		}
-		
 	}
-	//クリップ
-	{
-		if (input_->PushKey(DIK_W))
-		{
-			viewProjection_.nearZ += 0.1f;
-		}
-		else if (input_->PushKey(DIK_S))
-		{
-			viewProjection_.nearZ -= 0.1f;
-		}
-
-	}
-	viewProjection_.UpdateMatrix();
 
 	//デバッグ用表示
 	debugText_->SetPos(50, 50);
-	debugText_->Printf("fovangleY:%f",
-		RaditoAngle( viewProjection_.fovAngleY));
-
-	debugText_->SetPos(50, 70);
-	debugText_->Printf("nearZ:%f", viewProjection_.nearZ);
-
+	debugText_->Printf(":(%f,%f,%f)", worldTransforms_[0].translation_.x,
+		worldTransforms_[0].translation_.y, worldTransforms_[0].translation_.z);
 }
 
 void GameScene::Draw() {
@@ -205,10 +164,11 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	//3dモデル描画
-	for (WorldTransform& worldTransform_ : worldTransforms_)
+	for (size_t i = 2; i < kNumPartId; i++)
 	{
-		model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+		model_->Draw(worldTransforms_[i], viewProjection_, textureHandle_);
 	}
+	
 
 
 	// 3Dオブジェクト描画後処理

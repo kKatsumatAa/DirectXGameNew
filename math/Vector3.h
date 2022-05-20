@@ -23,9 +23,9 @@ class Vector3 {
 
 	//オバロ演算子
 	Vector3 operator+(const Vector3& other);
-	//Vector3& operator+=(const Vector3& other);
+	Vector3& operator+=(const Vector3& other);
 	Vector3 operator-(const Vector3& other);
-	//Vector3& operator-=(const Vector3& other);
+	Vector3& operator-=(const Vector3& other);
 	Vector3 operator*(const float& other);
 	Vector3& operator*=(const float& other);
 	Vector3 operator/(const float& other);

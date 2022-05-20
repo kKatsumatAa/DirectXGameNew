@@ -2,7 +2,8 @@
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Matrix4.h"
-#include <DirectXMath.h>
+#include "WorldTransform.h"
+
 
 //行列セット系
 //void Vector4xMatrix4(Vector4& v, const Matrix4& m4);
@@ -14,6 +15,17 @@ void TransposeMatrix4(Matrix4& m4);
 void SetScaleMatrix(Matrix4& m4, const Vector3& v3);
 void SetRotationMatrix(Matrix4& m4, const float& angle, const char& axis);
 void SetTranslationMatrix(Matrix4& m4, const Vector3& v3);
+void SetScaleRotTransMat(WorldTransform& world, 
+	const Vector3& scale,
+	const Vector3& rotation,
+	const Vector3& translation);
+/// <summary>
+/// 第一引数が親自身でも処理できる
+/// </summary>
+/// <param name="world"></param>
+/// <param name="worldParent"></param>
+void SetPareScaleRotTransMat(WorldTransform& world,
+	const WorldTransform* worldParent = nullptr);
 
 //ラジアン系
 const float pi = 3.141592f;
