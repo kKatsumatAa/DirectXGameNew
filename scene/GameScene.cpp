@@ -85,7 +85,12 @@ void GameScene::Initialize() {
 		i.TransferMatrix();
 	}
 	//カメラ垂直方向視野角
-	viewProjection_.fovAngleY = AngletoRadi(10.0f);
+	//viewProjection_.fovAngleY = AngletoRadi(10.0f);
+	//アスペクト比
+	viewProjection_.aspectRatio = 1.0f;
+	//ニアクリップファークリップ
+	viewProjection_.nearZ = 52.0f;
+	viewProjection_.farZ = 53.0f;
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -138,12 +143,27 @@ void GameScene::Update() {
 		}
 		
 	}
+	//クリップ
+	{
+		if (input_->PushKey(DIK_W))
+		{
+			viewProjection_.nearZ += 0.1f;
+		}
+		else if (input_->PushKey(DIK_S))
+		{
+			viewProjection_.nearZ -= 0.1f;
+		}
+
+	}
 	viewProjection_.UpdateMatrix();
 
 	//デバッグ用表示
 	debugText_->SetPos(50, 50);
 	debugText_->Printf("fovangleY:%f",
 		RaditoAngle( viewProjection_.fovAngleY));
+
+	debugText_->SetPos(50, 70);
+	debugText_->Printf("nearZ:%f", viewProjection_.nearZ);
 
 }
 
