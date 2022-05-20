@@ -115,8 +115,7 @@ void GameScene::Update() {
 		}
 		for (size_t i = 0; i < kNumPartId; i++)
 		{
-			SetPareScaleRotTransMat(worldTransforms_[i],
-				worldTransforms_[i].parent_);
+			UpdateWorldMatrix4(worldTransforms_[i]);
 		}
 	}
 
