@@ -52,8 +52,7 @@ class GameScene {
 	uint32_t textureHandle_ = 0;
 	//3Dモデル
 	Model* model_ = nullptr;
-	//ワールドトランスフォーム
-	WorldTransform worldTransform_;
+
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
@@ -61,22 +60,11 @@ class GameScene {
 	DebugCamera* debugCamera_ = nullptr;
 
 	//ワールドトランスフォーム
-	WorldTransform worldTransforms_[100];
+	WorldTransform worldTransforms_[3];
 
-	//パーツ
-	enum PartId {
-		kRoot,//大元
-		kSpine,//脊椎
-		kChest,//胸
-		kHead,//頭
-		kArmL,//左腕
-		kArmR,//右腕
-		kHip,//尻
-		kLegL,//左足
-		kLegR,//右足
-
-		kNumPartId
-	};
+	int toNum = 0;
+	Vector3 toVec = { 0,0,0 };
+	bool move = false;
 
 	/// <summary>
 	/// ゲームシーン用

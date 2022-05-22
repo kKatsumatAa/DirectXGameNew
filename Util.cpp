@@ -156,3 +156,9 @@ float RaditoAngle(const float& radian)
 {
 	return radian / pi * 180;
 }
+
+//--------------------------------------------------
+float lerp(float a, float b, float t)
+{
+	return a + t * (b - a);
+}

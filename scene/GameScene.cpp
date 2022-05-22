@@ -34,9 +34,6 @@ void GameScene::Initialize() {
 	//3Dモデルの生成
 	model_ = Model::Create();
 
-	//ワールドトランスフォームの初期化
-	worldTransform_.Initialize();
-
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
 
@@ -47,77 +44,47 @@ void GameScene::Initialize() {
 
 	//ライン描画が参照するビュープロジェクションを指定する（アドレス渡し）
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
+	worldTransforms_[0].translation_ = { 0,2.5f,0 };
+	worldTransforms_[1].translation_ = { -2.5f,-2.5f,0 };
+	worldTransforms_[2].translation_ = { 2.5f,-2.5f,0 };
 
-	// 親(Root)
-		//ワールドトランスフォーム初期化
-	worldTransforms_[PartId::kRoot].Initialize();
+	for (size_t i = 0; i < _countof(worldTransforms_); i++)
+	{
+		//ワールドトランスフォームの初期化
+		worldTransforms_[i].Initialize();
+		UpdateWorldMatrix4(worldTransforms_[i]);
+	}
 
-	//脊髄
-	// x,y,zの位置を設定
-	worldTransforms_[PartId::kSpine].translation_ = { 0, 4.5f, 0 };//ローカル座標
-	worldTransforms_[PartId::kSpine].parent_ = &worldTransforms_[PartId::kRoot];
-	worldTransforms_[PartId::kSpine].Initialize();
-
-	//上半身
-	//胸
-	worldTransforms_[PartId::kChest].translation_ = { 0, 2.0f, 0 }; //ローカル座標
-	worldTransforms_[PartId::kChest].parent_ = &worldTransforms_[PartId::kSpine];
-	worldTransforms_[PartId::kChest].Initialize();
-	//頭
-	worldTransforms_[PartId::kHead].translation_ = { 0, 4.5f, 0 }; //ローカル座標
-	worldTransforms_[PartId::kHead].parent_ = &worldTransforms_[PartId::kChest];
-	worldTransforms_[PartId::kHead].Initialize();
-	//左手
-	worldTransforms_[PartId::kArmL].translation_ = { 4.5f, 0, 0 }; //ローカル座標
-	worldTransforms_[PartId::kArmL].parent_ = &worldTransforms_[PartId::kChest];
-	worldTransforms_[PartId::kArmL].Initialize();
-	//右手
-	worldTransforms_[PartId::kArmR].translation_ = { -4.5f, 0, 0 }; //ローカル座標
-	worldTransforms_[PartId::kArmR].parent_ = &worldTransforms_[PartId::kChest];
-	worldTransforms_[PartId::kArmR].Initialize();
-
-	//下半身
-	//尻
-	worldTransforms_[PartId::kHip].translation_ = { 0, -2.0f, 0 }; //ローカル座標
-	worldTransforms_[PartId::kHip].parent_ = &worldTransforms_[PartId::kSpine];
-	worldTransforms_[PartId::kHip].Initialize();
-	//左足
-	worldTransforms_[PartId::kLegL].translation_ = { 4.5f, -4.5f, 0 }; //ローカル座標
-	worldTransforms_[PartId::kLegL].parent_ = &worldTransforms_[PartId::kHip];
-	worldTransforms_[PartId::kLegL].Initialize();
-	//右足
-	worldTransforms_[PartId::kLegR].translation_ = { -4.5f, -4.5f, 0 }; //ローカル座標
-	worldTransforms_[PartId::kLegR].parent_ = &worldTransforms_[PartId::kHip];
-	worldTransforms_[PartId::kLegR].Initialize();
-
-
+	viewProjection_.eye = { 0,0,-20.f };
+	viewProjection_.target = { 0,0,0 };
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 }
 
 void GameScene::Update() {
-
+	if (input_->TriggerKey(DIK_SPACE))//動く準備
 	{
-		//移動
+		toNum++;
+		if (toNum >= _countof(worldTransforms_))
 		{
-			Vector3 move = { (float)(input_->PushKey(DIK_RIGHT) - input_->PushKey(DIK_LEFT)),
-				(float)(input_->PushKey(DIK_UP) - input_->PushKey(DIK_DOWN)),
-				0 };
-			worldTransforms_[PartId::kRoot].translation_ += move;
+			toNum = 0;
 		}
-		{//回転
-			worldTransforms_[0].rotation_ += { 0,
-				(float)(input_->PushKey(DIK_I) - input_->PushKey(DIK_U)) * 0.1f,
-				0 };
-			worldTransforms_[kHead].rotation_ += {0,
-				(float)(input_->PushKey(DIK_K) - input_->PushKey(DIK_J)) * 0.1f,
-				0 };
-		}
-		for (size_t i = 0; i < kNumPartId; i++)
-		{
-			UpdateWorldMatrix4(worldTransforms_[i]);
-		}
+		toVec = worldTransforms_[toNum].translation_ - viewProjection_.target;
+		toVec= toVec.GetNormalized()*0.1f;
+		move = true;
 	}
+	if (move)//動かす
+	{
+		viewProjection_.target += toVec;
+	}
+
+	Vector3 compareVec = worldTransforms_[toNum].translation_ - viewProjection_.target;//通り過ぎてるか比較用のベクトル
+	if (compareVec.x * toVec.x < 0 || compareVec.y * toVec.y < 0 || compareVec.z * toVec.z < 0)//x,y,zどれかの符号が違っていたら通り過ぎている
+	{
+		viewProjection_.target = worldTransforms_[toNum].translation_;//止める
+		move = false;
+	}
+	viewProjection_.UpdateMatrix();
 
 	//デバッグ用表示
 	debugText_->SetPos(50, 50);
@@ -163,7 +130,7 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	//3dモデル描画
-	for (size_t i = 2; i < kNumPartId; i++)
+	for (size_t i = 0; i < _countof(worldTransforms_); i++)
 	{
 		model_->Draw(worldTransforms_[i], viewProjection_, textureHandle_);
 	}
