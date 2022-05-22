@@ -44,52 +44,41 @@ void GameScene::Initialize() {
 
 	//ライン描画が参照するビュープロジェクションを指定する（アドレス渡し）
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
-	worldTransforms_[0].translation_ = { 0,2.5f,0 };
-	worldTransforms_[1].translation_ = { -2.5f,-2.5f,0 };
-	worldTransforms_[2].translation_ = { 2.5f,-2.5f,0 };
 
-	for (size_t i = 0; i < _countof(worldTransforms_); i++)
+	for (size_t i = 0; i < 9; i++)
 	{
-		//ワールドトランスフォームの初期化
-		worldTransforms_[i].Initialize();
-		UpdateWorldMatrix4(worldTransforms_[i]);
+		for (size_t j = 0; j < 9; j++)
+		{
+			worldTransforms_[i][j].translation_ = { -10.f + 2.5f * i,-10.f + 2.5f * j,0 };
+
+			//ワールドトランスフォームの初期化
+			worldTransforms_[i][j].Initialize();
+			UpdateWorldMatrix4(worldTransforms_[i][j]);
+		}
 	}
 
-	viewProjection_.eye = { 0,0,-20.f };
+	viewProjection_.eye = { 0,0,-50.f };
 	viewProjection_.target = { 0,0,0 };
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 }
 
 void GameScene::Update() {
-	if (input_->TriggerKey(DIK_SPACE))//動く準備
-	{
-		toNum++;
-		if (toNum >= _countof(worldTransforms_))
-		{
-			toNum = 0;
-		}
-		toVec = worldTransforms_[toNum].translation_ - viewProjection_.target;
-		toVec= toVec.GetNormalized()*0.1f;
-		move = true;
-	}
-	if (move)//動かす
-	{
-		viewProjection_.target += toVec;
-	}
+	viewProjection_.target.x += (input_->PushKey(DIK_D) - input_->PushKey(DIK_A));
+	viewProjection_.target.y += (input_->PushKey(DIK_W) - input_->PushKey(DIK_S));
 
-	Vector3 compareVec = worldTransforms_[toNum].translation_ - viewProjection_.target;//通り過ぎてるか比較用のベクトル
-	if (compareVec.x * toVec.x < 0 || compareVec.y * toVec.y < 0 || compareVec.z * toVec.z < 0)//x,y,zどれかの符号が違っていたら通り過ぎている
-	{
-		viewProjection_.target = worldTransforms_[toNum].translation_;//止める
-		move = false;
-	}
+	viewProjection_.fovAngleY += ((input_->PushKey(DIK_DOWN) - input_->PushKey(DIK_UP))*0.01f);
+	viewProjection_.fovAngleY = min(viewProjection_.fovAngleY, pi);
+	viewProjection_.fovAngleY = max(viewProjection_.fovAngleY, 0.01f);
+
 	viewProjection_.UpdateMatrix();
 
 	//デバッグ用表示
 	debugText_->SetPos(50, 50);
 	debugText_->Printf("target:(%f,%f,%f)", viewProjection_.target.x,
 		viewProjection_.target.y, viewProjection_.target.z);
+	debugText_->SetPos(50, 70);
+	debugText_->Printf("fovAngleY:(%f)", viewProjection_.fovAngleY);
 }
 
 void GameScene::Draw() {
@@ -130,11 +119,13 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	//3dモデル描画
-	for (size_t i = 0; i < _countof(worldTransforms_); i++)
+	for (size_t i = 0; i < 9; i++)
 	{
-		model_->Draw(worldTransforms_[i], viewProjection_, textureHandle_);
+		for (size_t j = 0; j < 9; j++)
+		{
+			model_->Draw(worldTransforms_[i][j], viewProjection_, textureHandle_);
+		}
 	}
-	
 
 
 	// 3Dオブジェクト描画後処理

@@ -60,11 +60,7 @@ class GameScene {
 	DebugCamera* debugCamera_ = nullptr;
 
 	//ワールドトランスフォーム
-	WorldTransform worldTransforms_[3];
-
-	int toNum = 0;
-	Vector3 toVec = { 0,0,0 };
-	bool move = false;
+	WorldTransform worldTransforms_[9][9];
 
 	/// <summary>
 	/// ゲームシーン用
