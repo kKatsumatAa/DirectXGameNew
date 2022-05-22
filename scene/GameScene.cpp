@@ -88,8 +88,8 @@ void GameScene::Update() {
 
 	//デバッグ用表示
 	debugText_->SetPos(50, 50);
-	debugText_->Printf(":(%f,%f,%f)", worldTransforms_[0].translation_.x,
-		worldTransforms_[0].translation_.y, worldTransforms_[0].translation_.z);
+	debugText_->Printf("target:(%f,%f,%f)", viewProjection_.target.x,
+		viewProjection_.target.y, viewProjection_.target.z);
 }
 
 void GameScene::Draw() {
