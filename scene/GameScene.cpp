@@ -71,14 +71,24 @@ void GameScene::Update() {
 	viewProjection_.target.x += (input_->PushKey(DIK_RIGHT) - input_->PushKey(DIK_LEFT));
 	viewProjection_.target.y += (input_->PushKey(DIK_UP) - input_->PushKey(DIK_DOWN));
 
-	if (input_->TriggerKey(DIK_SPACE))
+	if (input_->PushKey(DIK_SPACE))
 	{
-		if (isScope) isScope = false;
-		else         isScope = true;
+		isScope = true;
 	}
-	if (isScope) 	viewProjection_.fovAngleY = AngletoRadi(30.f);
-	else         	viewProjection_.fovAngleY = fovTmp;
-	viewProjection_.fovAngleY = min(viewProjection_.fovAngleY, pi);
+	else isScope = false;
+
+	if (isScope)
+	{
+		viewProjection_.fovAngleY -= 0.01f;
+		viewProjection_.fovAngleY = max(viewProjection_.fovAngleY, AngletoRadi(30.f));
+	}
+
+	else
+	{
+		viewProjection_.fovAngleY += 0.01f;
+		viewProjection_.fovAngleY = min(viewProjection_.fovAngleY, fovTmp);
+	}
+		viewProjection_.fovAngleY = min(viewProjection_.fovAngleY, pi);
 	viewProjection_.fovAngleY = max(viewProjection_.fovAngleY, 0.01f);
 
 	viewProjection_.UpdateMatrix();
