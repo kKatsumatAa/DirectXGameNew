@@ -67,7 +67,9 @@ class GameScene {
 	bool isScope = false;
 	float fovTmp = AngletoRadi(60.f);
 
-	Sprite* sprite = nullptr;
+	Sprite* sprite[2] = { nullptr,nullptr };
+
+	bool extend = false;
 
 	/// <summary>
 	/// ゲームシーン用
