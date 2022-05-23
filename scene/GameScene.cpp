@@ -3,13 +3,13 @@
 #include <cassert>
 #include "AxisIndicator.h"
 #include "PrimitiveDrawer.h"
-#include "Util.h"
 #include <random>
 
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete model_;
+	delete sprite;
 	delete debugCamera_;
 }
 
@@ -31,8 +31,10 @@ void GameScene::Initialize() {
 
 	//ファイル名を指定してテクスチャを読み込む
 	textureHandle_ = TextureManager::Load("kasuga.png");
+	textureHandle2_ = TextureManager::Load("reticle.png");
 	//3Dモデルの生成
 	model_ = Model::Create();
+	sprite = Sprite::Create(textureHandle2_, { WinApp::kWindowWidth / 2.f - 64, WinApp::kWindowHeight / 2.f - 64 });
 
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
@@ -49,7 +51,8 @@ void GameScene::Initialize() {
 	{
 		for (size_t j = 0; j < 9; j++)
 		{
-			worldTransforms_[i][j].translation_ = { -10.f + 2.5f * i,-10.f + 2.5f * j,0 };
+			worldTransforms_[i][j].translation_ = { posDist(engine),posDist(engine),posDist(engine) };
+			worldTransforms_[i][j].rotation_ = { rotDist(engine),rotDist(engine),rotDist(engine) };
 
 			//ワールドトランスフォームの初期化
 			worldTransforms_[i][j].Initialize();
@@ -59,15 +62,22 @@ void GameScene::Initialize() {
 
 	viewProjection_.eye = { 0,0,-50.f };
 	viewProjection_.target = { 0,0,0 };
+	viewProjection_.fovAngleY = 60.f;
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 }
 
 void GameScene::Update() {
-	viewProjection_.target.x += (input_->PushKey(DIK_D) - input_->PushKey(DIK_A));
-	viewProjection_.target.y += (input_->PushKey(DIK_W) - input_->PushKey(DIK_S));
+	viewProjection_.target.x += (input_->PushKey(DIK_RIGHT) - input_->PushKey(DIK_LEFT));
+	viewProjection_.target.y += (input_->PushKey(DIK_UP) - input_->PushKey(DIK_DOWN));
 
-	viewProjection_.fovAngleY += ((input_->PushKey(DIK_DOWN) - input_->PushKey(DIK_UP))*0.01f);
+	if (input_->TriggerKey(DIK_SPACE))
+	{
+		if (isScope) isScope = false;
+		else         isScope = true;
+	}
+	if (isScope) 	viewProjection_.fovAngleY = AngletoRadi(30.f);
+	else         	viewProjection_.fovAngleY = fovTmp;
 	viewProjection_.fovAngleY = min(viewProjection_.fovAngleY, pi);
 	viewProjection_.fovAngleY = max(viewProjection_.fovAngleY, 0.01f);
 
@@ -78,7 +88,7 @@ void GameScene::Update() {
 	debugText_->Printf("target:(%f,%f,%f)", viewProjection_.target.x,
 		viewProjection_.target.y, viewProjection_.target.z);
 	debugText_->SetPos(50, 70);
-	debugText_->Printf("fovAngleY:(%f)", viewProjection_.fovAngleY);
+	debugText_->Printf("fovAngleY:(%f)", RaditoAngle(viewProjection_.fovAngleY));
 }
 
 void GameScene::Draw() {
@@ -144,6 +154,7 @@ void GameScene::Draw() {
 	debugText_->DrawAll(commandList);
 	//
 	// スプライト描画後処理
+	if(isScope) sprite->Draw();
 	Sprite::PostDraw();
 
 #pragma endregion

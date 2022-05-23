@@ -10,6 +10,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "DebugCamera.h"
+#include "Util.h"
 
 /// <summary>
 /// ゲームシーン
@@ -50,6 +51,7 @@ class GameScene {
 
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0;
+	uint32_t textureHandle2_ = 0;
 	//3Dモデル
 	Model* model_ = nullptr;
 
@@ -61,6 +63,11 @@ class GameScene {
 
 	//ワールドトランスフォーム
 	WorldTransform worldTransforms_[9][9];
+
+	bool isScope = false;
+	float fovTmp = AngletoRadi(60.f);
+
+	Sprite* sprite = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用
