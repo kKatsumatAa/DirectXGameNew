@@ -22,9 +22,9 @@ class Vector3 {
 	float Dot(const Vector3& other) const;
 
 	//オバロ演算子
-	Vector3 operator+(const Vector3& other);
+	Vector3 operator+();
 	Vector3& operator+=(const Vector3& other);
-	Vector3 operator-(const Vector3& other);
+	Vector3 operator-();
 	Vector3& operator-=(const Vector3& other);
 	Vector3 operator*(const float& other);
 	Vector3& operator*=(const float& other);

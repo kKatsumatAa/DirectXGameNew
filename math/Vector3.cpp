@@ -37,14 +37,9 @@ float Vector3::Dot(const Vector3& other)const
 
 //--------------------------------------------------------
 
-Vector3 Vector3::operator+(const Vector3& other)
+Vector3 Vector3::operator+()
 {
-    Vector3 v = *this;
-    v.x += other.x;
-    v.y += other.y;
-    v.z += other.z;
-
-    return Vector3(v);
+    return *this;
 }
 
 //Vector3& Vector3::operator+=(const Vector3& other)
@@ -56,14 +51,9 @@ Vector3 Vector3::operator+(const Vector3& other)
 //    return *this;
 //}
 
-Vector3 Vector3::operator-(const Vector3& other)
+Vector3 Vector3::operator-()
 {
-    Vector3 v = *this;
-    v.x -= other.x;
-    v.y -= other.y;
-    v.z -= other.z;
-
-    return Vector3(v);
+    return { -x,-y,-z };
 }
 
 //Vector3& Vector3::operator-=(const Vector3& other)
@@ -119,29 +109,29 @@ Vector3& Vector3::operator/=(const float& other)
 const Vector3 operator+(const Vector3& v1, const Vector3& v2)
 {
     Vector3 temp(v1);
-    return temp + v2;
+    return temp += v2;
 }
 
 const Vector3 operator-(const Vector3& v1, const Vector3& v2)
 {
     Vector3 temp(v1);
-    return temp - v2;
+    return temp -= v2;
 }
 
 const Vector3 operator*(const Vector3& v, float s)
 {
     Vector3 temp(v);
-    return temp * s;
+    return temp *= s;
 }
 
 const Vector3 operator*(float s, const Vector3& v)
 {
     Vector3 temp(v);
-    return temp * s;
+    return temp *= s;
 }
 
 const Vector3 operator/(const Vector3& v, float s)
 {
     Vector3 temp(v);
-    return temp / s;
+    return temp /= s;
 }
