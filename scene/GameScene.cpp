@@ -124,8 +124,11 @@ void GameScene::Update() {
 	debugText_->Printf("extend:(%d)", extend);
 	debugText_->SetPos(50, 110);
 	debugText_->Printf("scope:(%d)", isScope);
-	debugText_->SetPos(WinApp::kWindowHeight+WinApp::kWindowHeight/3.f, 50);
-	debugText_->Printf("x(%d)", extend*4+4);
+	if (isScope)
+	{
+		debugText_->SetPos(WinApp::kWindowHeight + WinApp::kWindowHeight / 3.f, 50);
+		debugText_->Printf("x(%d)", extend * 4 + 4);
+	}
 }
 
 void GameScene::Draw() {
