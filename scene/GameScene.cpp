@@ -107,11 +107,18 @@ void GameScene::Update() {
 		}
 		{//回転
 			worldTransforms_[0].rotation_ += { 0,
-				(float)(input_->PushKey(DIK_I) - input_->PushKey(DIK_U)) * 0.1f,
+				(float)(input_->PushKey(DIK_D) - input_->PushKey(DIK_A)) * 0.1f,
 				0 };
-			worldTransforms_[kHead].rotation_ += {0,
-				(float)(input_->PushKey(DIK_K) - input_->PushKey(DIK_J)) * 0.1f,
-				0 };
+			worldTransforms_[0].rotation_ += {
+				(float)(input_->PushKey(DIK_W) - input_->PushKey(DIK_S)) * 0.1f,
+					0, 0 };
+
+			//自動回転
+			Vector3 roteSpeed = { AngletoRadi(10.f),0,0 };
+			worldTransforms_[kArmL].rotation_ += roteSpeed;
+			worldTransforms_[kLegR].rotation_ += roteSpeed;
+			worldTransforms_[kArmR].rotation_ -= roteSpeed;
+			worldTransforms_[kLegL].rotation_ -= roteSpeed;
 		}
 		for (size_t i = 0; i < kNumPartId; i++)
 		{
@@ -121,7 +128,7 @@ void GameScene::Update() {
 
 	//デバッグ用表示
 	debugText_->SetPos(50, 50);
-	debugText_->Printf(":(%f,%f,%f)", worldTransforms_[0].translation_.x,
+	debugText_->Printf("ROOTtranslation:(%f,%f,%f)", worldTransforms_[0].translation_.x,
 		worldTransforms_[0].translation_.y, worldTransforms_[0].translation_.z);
 }
 
@@ -167,7 +174,7 @@ void GameScene::Draw() {
 	{
 		model_->Draw(worldTransforms_[i], viewProjection_, textureHandle_);
 	}
-	
+
 
 
 	// 3Dオブジェクト描画後処理
