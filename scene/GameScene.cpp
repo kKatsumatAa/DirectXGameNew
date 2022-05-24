@@ -114,7 +114,7 @@ void GameScene::Update() {
 					0, 0 };
 
 			//自動回転
-			Vector3 roteSpeed = { AngletoRadi(10.f),0,0 };
+			Vector3 roteSpeed = { AngletoRadi(5.f),0,0 };
 			
 			worldTransforms_[kArmL].rotation_ += roteSpeed;
 			worldTransforms_[kLegR].rotation_ += roteSpeed;
