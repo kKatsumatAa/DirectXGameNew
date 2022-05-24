@@ -78,6 +78,8 @@ class GameScene {
 		kNumPartId
 	};
 
+	float f = 0;
+
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
