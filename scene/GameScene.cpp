@@ -3,7 +3,7 @@
 #include <cassert>
 #include "AxisIndicator.h"
 #include "PrimitiveDrawer.h"
-#include "Util.h"
+
 #include <random>
 
 GameScene::GameScene() {}
@@ -114,15 +114,20 @@ void GameScene::Update() {
 					0, 0 };
 
 			//自動回転
-			Vector3 roteSpeed = { AngletoRadi(5.f),0,0 };
-			
+
+
+			if (worldTransforms_[kArmL].rotation_.x >= maxRote
+				|| worldTransforms_[kArmL].rotation_.x <= minRote)
+			{
+				roteSpeed = -roteSpeed;
+			}
 			worldTransforms_[kArmL].rotation_ += roteSpeed;
 			worldTransforms_[kLegR].rotation_ += roteSpeed;
 			worldTransforms_[kArmR].rotation_ -= roteSpeed;
 			worldTransforms_[kLegL].rotation_ -= roteSpeed;
-			worldTransforms_[kHead].rotation_ += {0.1f,0.1f,0.1f};
-			f+=0.1f;
-			worldTransforms_[kHead].translation_.y = 4.5f + sinf(f)*2;
+			worldTransforms_[kHead].rotation_ += {0.1f, 0.1f, 0.1f};
+			f += 0.1f;
+			worldTransforms_[kHead].translation_.y = 4.5f + sinf(f) * 2;
 		}
 		for (size_t i = 0; i < kNumPartId; i++)
 		{

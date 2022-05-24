@@ -10,6 +10,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "DebugCamera.h"
+#include "Util.h"
 
 /// <summary>
 /// ゲームシーン
@@ -79,7 +80,9 @@ class GameScene {
 	};
 
 	float f = 0;
-
+	float maxRote = AngletoRadi(45.f);
+	float minRote = AngletoRadi(-45.f);
+	Vector3 roteSpeed = { AngletoRadi(5.f),0,0 };
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
