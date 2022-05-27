@@ -75,6 +75,10 @@ class GameScene {
 		kHip,//尻
 		kLegL,//左足
 		kLegR,//右足
+		kLegL2,//左足2
+		kLegR2,//右足2
+		kArmL2,//左腕2
+		kArmR2,//右腕2
 
 		kNumPartId
 	};
@@ -83,6 +87,7 @@ class GameScene {
 	float maxRote = AngletoRadi(45.f);
 	float minRote = AngletoRadi(-45.f);
 	Vector3 roteSpeed = { AngletoRadi(5.f),0,0 };
+	bool isWalk = false;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

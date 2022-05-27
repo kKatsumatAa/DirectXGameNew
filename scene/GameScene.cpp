@@ -54,7 +54,7 @@ void GameScene::Initialize() {
 
 	//脊髄
 	// x,y,zの位置を設定
-	worldTransforms_[PartId::kSpine].translation_ = { 0, 4.5f, 0 };//ローカル座標
+	worldTransforms_[PartId::kSpine].translation_ = { 0, 2.f, 0 };//ローカル座標
 	worldTransforms_[PartId::kSpine].parent_ = &worldTransforms_[PartId::kRoot];
 	worldTransforms_[PartId::kSpine].Initialize();
 
@@ -64,17 +64,26 @@ void GameScene::Initialize() {
 	worldTransforms_[PartId::kChest].parent_ = &worldTransforms_[PartId::kSpine];
 	worldTransforms_[PartId::kChest].Initialize();
 	//頭
-	worldTransforms_[PartId::kHead].translation_ = { 0, 4.5f, 0 }; //ローカル座標
+	worldTransforms_[PartId::kHead].translation_ = { 0, 2.f, 0 }; //ローカル座標
 	worldTransforms_[PartId::kHead].parent_ = &worldTransforms_[PartId::kChest];
 	worldTransforms_[PartId::kHead].Initialize();
 	//左手
-	worldTransforms_[PartId::kArmL].translation_ = { 4.5f, 0, 0 }; //ローカル座標
+	worldTransforms_[PartId::kArmL].translation_ = { 2.f, 0, 0 }; //ローカル座標
 	worldTransforms_[PartId::kArmL].parent_ = &worldTransforms_[PartId::kChest];
 	worldTransforms_[PartId::kArmL].Initialize();
 	//右手
-	worldTransforms_[PartId::kArmR].translation_ = { -4.5f, 0, 0 }; //ローカル座標
+	worldTransforms_[PartId::kArmR].translation_ = { -2.f, 0, 0 }; //ローカル座標
 	worldTransforms_[PartId::kArmR].parent_ = &worldTransforms_[PartId::kChest];
 	worldTransforms_[PartId::kArmR].Initialize();
+	//左手2
+	worldTransforms_[PartId::kArmL2].translation_ = { 0, -2.f, 0 }; //ローカル座標
+	worldTransforms_[PartId::kArmL2].parent_ = &worldTransforms_[PartId::kArmL];
+	worldTransforms_[PartId::kArmL2].Initialize();
+	//右手2						
+	worldTransforms_[PartId::kArmR2].translation_ = { -0, -2.f, 0 }; //ローカル座標
+	worldTransforms_[PartId::kArmR2].parent_ = &worldTransforms_[PartId::kArmR];
+	worldTransforms_[PartId::kArmR2].Initialize();
+
 
 	//下半身
 	//尻
@@ -82,13 +91,21 @@ void GameScene::Initialize() {
 	worldTransforms_[PartId::kHip].parent_ = &worldTransforms_[PartId::kSpine];
 	worldTransforms_[PartId::kHip].Initialize();
 	//左足
-	worldTransforms_[PartId::kLegL].translation_ = { 4.5f, -4.5f, 0 }; //ローカル座標
+	worldTransforms_[PartId::kLegL].translation_ = { 2.f, -2.f, 0 }; //ローカル座標
 	worldTransforms_[PartId::kLegL].parent_ = &worldTransforms_[PartId::kHip];
 	worldTransforms_[PartId::kLegL].Initialize();
 	//右足
-	worldTransforms_[PartId::kLegR].translation_ = { -4.5f, -4.5f, 0 }; //ローカル座標
+	worldTransforms_[PartId::kLegR].translation_ = { -2.f, -2.f, 0 }; //ローカル座標
 	worldTransforms_[PartId::kLegR].parent_ = &worldTransforms_[PartId::kHip];
 	worldTransforms_[PartId::kLegR].Initialize();
+	//左足2
+	worldTransforms_[PartId::kLegL2].translation_ = { 0, -2.f, 0 }; //ローカル座標
+	worldTransforms_[PartId::kLegL2].parent_ = &worldTransforms_[PartId::kLegL];
+	worldTransforms_[PartId::kLegL2].Initialize();
+	//右足2						
+	worldTransforms_[PartId::kLegR2].translation_ = { 0, -2.f, 0 }; //ローカル座標
+	worldTransforms_[PartId::kLegR2].parent_ = &worldTransforms_[PartId::kLegR];
+	worldTransforms_[PartId::kLegR2].Initialize();
 
 
 	//ビュープロジェクションの初期化
@@ -109,22 +126,24 @@ void GameScene::Update() {
 			worldTransforms_[0].rotation_ += { 0,
 				(float)(input_->PushKey(DIK_D) - input_->PushKey(DIK_A)) * 0.1f,
 				0 };
-			worldTransforms_[0].rotation_ += {
+			/*worldTransforms_[0].rotation_ += {
 				(float)(input_->PushKey(DIK_W) - input_->PushKey(DIK_S)) * 0.1f,
-					0, 0 };
+					0, 0 };*/
 
 			//自動回転
 
-
-			if (worldTransforms_[kArmL].rotation_.x >= maxRote
-				|| worldTransforms_[kArmL].rotation_.x <= minRote)
+			if (input_->PushKey(DIK_W))
 			{
-				roteSpeed = -roteSpeed;
+				if (worldTransforms_[kArmL].rotation_.x >= maxRote
+					|| worldTransforms_[kArmL].rotation_.x <= minRote)
+				{
+					roteSpeed = -roteSpeed;
+				}
+				worldTransforms_[kArmL].rotation_ += roteSpeed;
+				worldTransforms_[kLegR].rotation_ += roteSpeed;
+				worldTransforms_[kArmR].rotation_ -= roteSpeed;
+				worldTransforms_[kLegL].rotation_ -= roteSpeed;
 			}
-			worldTransforms_[kArmL].rotation_ += roteSpeed;
-			worldTransforms_[kLegR].rotation_ += roteSpeed;
-			worldTransforms_[kArmR].rotation_ -= roteSpeed;
-			worldTransforms_[kLegL].rotation_ -= roteSpeed;
 			worldTransforms_[kHead].rotation_ += {0.1f, 0.1f, 0.1f};
 			f += 0.1f;
 			worldTransforms_[kHead].translation_.y = 4.5f + sinf(f) * 2;
@@ -139,6 +158,8 @@ void GameScene::Update() {
 	debugText_->SetPos(50, 50);
 	debugText_->Printf("ROOTtranslation:(%f,%f,%f)", worldTransforms_[0].translation_.x,
 		worldTransforms_[0].translation_.y, worldTransforms_[0].translation_.z);
+	debugText_->SetPos(50, 70);
+	debugText_->Printf("angle:(%f)", RaditoAngle(worldTransforms_[0].rotation_.y));
 }
 
 void GameScene::Draw() {
