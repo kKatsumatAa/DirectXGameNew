@@ -144,12 +144,30 @@ void GameScene::Update() {
 				worldTransforms_[kArmR].rotation_ -= roteSpeed;
 				worldTransforms_[kLegL].rotation_ -= roteSpeed;
 			}
+			
+
 			worldTransforms_[kHead].rotation_ += {0.1f, 0.1f, 0.1f};
 			f += 0.1f;
 			worldTransforms_[kHead].translation_.y = 4.5f + sinf(f) * 2;
 		}
+		
 		for (size_t i = 0; i < kNumPartId; i++)
 		{
+			if (worldTransforms_[i].rotation_.x != 0.f && !input_->PushKey(DIK_W) && kArmL<=i)//自動で手足が戻る処理
+			{
+				if (worldTransforms_[i].rotation_.x > 0)
+				{
+					worldTransforms_[i].rotation_.x -= 0.05f;
+					if (worldTransforms_[i].rotation_.x < 0) worldTransforms_[i].rotation_.x = 0;
+				}
+
+				if (worldTransforms_[i].rotation_.x < 0)
+				{
+					worldTransforms_[i].rotation_.x += 0.05f;
+					if (worldTransforms_[i].rotation_.x > 0) worldTransforms_[i].rotation_.x = 0;
+				}
+			}
+
 			UpdateWorldMatrix4(worldTransforms_[i]);
 		}
 	}
