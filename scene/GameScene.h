@@ -87,6 +87,11 @@ class GameScene {
 	float maxRote = AngletoRadi(45.f);
 	float minRote = AngletoRadi(-45.f);
 	Vector3 roteSpeed = { AngletoRadi(5.f),0,0 };
+	Vector3 move = { 0,0,0 };
+	bool isDash = false;
+	bool isJump = false;
+	const float gravity = -0.1f;
+	const float jumpPow = 1.5f;
 	bool isWalk = false;
 	/// <summary>
 	/// ゲームシーン用

@@ -115,12 +115,25 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 	{
+		move.x = (float)(input_->PushKey(DIK_RIGHT) - input_->PushKey(DIK_LEFT));
+
+		if (worldTransforms_[PartId::kRoot].translation_.y > 0) move.y += gravity;
+		else move.y = 0;
+
+		if (input_->TriggerKey(DIK_SPACE) && !isJump)//ジャンプ
+		{
+			isJump = true;
+			move.y = jumpPow;
+		}
+
 		//移動
 		{
-			Vector3 move = { (float)(input_->PushKey(DIK_RIGHT) - input_->PushKey(DIK_LEFT)),
-				(float)(input_->PushKey(DIK_UP) - input_->PushKey(DIK_DOWN)),
-				0 };
 			worldTransforms_[PartId::kRoot].translation_ += move;
+			if (worldTransforms_[PartId::kRoot].translation_.y <= 0)
+			{
+				worldTransforms_[PartId::kRoot].translation_.y = 0;
+				isJump = false;
+			}
 		}
 		{//回転
 			worldTransforms_[0].rotation_ += { 0,
@@ -130,7 +143,10 @@ void GameScene::Update() {
 				(float)(input_->PushKey(DIK_W) - input_->PushKey(DIK_S)) * 0.1f,
 					0, 0 };*/
 
-			//自動回転
+			
+
+			if (input_->PushKey(DIK_LSHIFT))isDash = true;
+			else isDash = false;
 
 			if (input_->PushKey(DIK_W))
 			{
@@ -139,10 +155,10 @@ void GameScene::Update() {
 				{
 					roteSpeed = -roteSpeed;
 				}
-				worldTransforms_[kArmL].rotation_ += roteSpeed;
-				worldTransforms_[kLegR].rotation_ += roteSpeed;
-				worldTransforms_[kArmR].rotation_ -= roteSpeed;
-				worldTransforms_[kLegL].rotation_ -= roteSpeed;
+				worldTransforms_[kArmL].rotation_ += roteSpeed + roteSpeed * isDash;
+				worldTransforms_[kLegR].rotation_ += roteSpeed + roteSpeed * isDash;
+				worldTransforms_[kArmR].rotation_ -= roteSpeed + roteSpeed * isDash;
+				worldTransforms_[kLegL].rotation_ -= roteSpeed + roteSpeed * isDash;
 			}
 			
 
