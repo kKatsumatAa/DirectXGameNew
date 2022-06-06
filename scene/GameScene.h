@@ -12,6 +12,7 @@
 #include "DebugCamera.h"
 #include "Util.h"
 #include "Player.h"
+#include "MathUtility.h"
 
 /// <summary>
 /// ゲームシーン
@@ -64,9 +65,11 @@ class GameScene {
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
-	Player* player_ = nullptr;
+	/*Player* player_ = nullptr;*/
 
 	float viewAngle = AngletoRadi(90.f);
+
+	bool mode = false;
 	
 	/// <summary>
 	/// ゲームシーン用

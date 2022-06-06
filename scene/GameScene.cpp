@@ -3,6 +3,7 @@
 #include <cassert>
 #include "AxisIndicator.h"
 #include "PrimitiveDrawer.h"
+#include "Util.h"
 
 #include <random>
 
@@ -10,7 +11,7 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete model_;
-	delete player_;
+	/*delete player_;*/
 }
 
 void GameScene::Initialize() {
@@ -20,66 +21,104 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 	debugText_ = DebugText::GetInstance();
-
-	//ファイル名を指定してテクスチャを読み込む
 	textureHandle_ = TextureManager::Load("kasuga.png");
-	//3Dモデルの生成
+
+
+	//モデル初期化
 	model_ = Model::Create();
 
-	player_ = new Player();
-	player_->Initialize(model_, textureHandle_);
+	viewProjection_.eye = { 0, 20, -30 };
+	viewProjection_.target = { 0, 0, 0 };
 
-	//ワールドトランスフォームの初期化
-	worldTransform_.Initialize();
-
-	//軸方向表示の表示を有効にする
-	AxisIndicator::GetInstance()->SetVisible(true);
-	//軸方向表示が参照するビュープロジェクションを指定する（アドレス渡し）
-	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
-
-	//ライン描画が参照するビュープロジェクションを指定する（アドレス渡し）
-	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
-
-
-	//ビュープロジェクションの初期化
+	//ビュープロジェクション初期化
 	viewProjection_.Initialize();
+
+	//ワールドトランスフォーム初期化
+	worldTransform_.Initialize();
 }
 
 void GameScene::Update() {
 	
-
-
-	player_->Update();
-
-	const float kEyeSpeed = 0.2f;
-	if (input_->PushKey(DIK_W)) viewProjection_.eye.z += kEyeSpeed;
-	else if (input_->PushKey(DIK_S)) viewProjection_.eye.z -= kEyeSpeed;
-
-	if (input_->PushKey(DIK_A)) viewProjection_.target.x -= kEyeSpeed;
-	else if (input_->PushKey(DIK_D)) viewProjection_.target.x += kEyeSpeed;
-
-	//up回転
-	const float kUprotSpeed = 0.05f;
-	if (input_->PushKey(DIK_SPACE))
+	if (input_->TriggerKey(DIK_Q))
 	{
-		viewAngle += kUprotSpeed;
-		viewAngle = fmodf(viewAngle, pi * 2.f);
+		if (mode) mode = false;
+		else      mode = true;
 	}
-	viewProjection_.up = { cosf(viewAngle), sinf(viewAngle), 0.0f };
+
+	if (!mode)
+	{
+		//終点
+		Vector3 endPoint = { 0, 0, 0 };
+		//正面ベクトル
+		Vector3 vecFront = { 0, 0, 0 };
+		//大きさ
+		const float frontLength = 10.0f;
+		//正規化したベクトル
+		Vector3 normalFLength = { 0, 0, 0 };
+
+		const float frontSpeed = 0.5f;
+
+		if (input_->PushKey(DIK_A)) {
+			worldTransform_.rotation_.y -= frontSpeed / 10;
+		}if (input_->PushKey(DIK_D)) {
+			worldTransform_.rotation_.y += frontSpeed / 10;
+		}
+
+		//正面ベクトルの終点を、オブジェクトの回転に合わせて一緒に回転
+		endPoint = {
+		  worldTransform_.translation_.x + sinf(worldTransform_.rotation_.y) * frontLength,
+		  worldTransform_.translation_.y,
+		  worldTransform_.translation_.z + cosf(worldTransform_.rotation_.y) * frontLength };
+
+		//正面ベクトルの成分を計算
+		vecFront = {
+		  endPoint.x - worldTransform_.translation_.x,
+		  endPoint.y - worldTransform_.translation_.y,
+		  endPoint.z - worldTransform_.translation_.z };
+
+		//成分を正規化
+		normalFLength = { vecFront.x / frontLength, vecFront.y / frontLength, vecFront.z / frontLength };
+
+
+		//押した方向で移動ベクトルを変更
+		if (input_->PushKey(DIK_W)) {
+			worldTransform_.translation_ = {
+			  worldTransform_.translation_.x + normalFLength.x * 0.1f,
+			  worldTransform_.translation_.y + normalFLength.y * 0.1f,
+			  worldTransform_.translation_.z + normalFLength.z * 0.1f };
+		}if (input_->PushKey(DIK_S)) {
+			worldTransform_.translation_ = {
+			  worldTransform_.translation_.x - normalFLength.x * 0.1f,
+			  worldTransform_.translation_.y - normalFLength.y * 0.1f,
+			  worldTransform_.translation_.z - normalFLength.z * 0.1f };
+		}
+	}
+	else
+	{
+		viewProjection_.eye.x += input_->PushKey(DIK_RIGHT) - input_->PushKey(DIK_LEFT);
+		viewProjection_.eye.y += input_->PushKey(DIK_UP) - input_->PushKey(DIK_DOWN);
+
+		Vector3 v;
+		Vector3 v2={0,1,0};
+
+		v = viewProjection_.target - viewProjection_.eye;
+		v.y = 0;
+		v.Normalized();
+
+		v2 = v2.Cross(v);
+
+		if (input_->PushKey(DIK_W))worldTransform_.translation_ += v;
+		if (input_->PushKey(DIK_S))worldTransform_.translation_ -= v;
+		if (input_->PushKey(DIK_D))worldTransform_.translation_ += v2;
+		if (input_->PushKey(DIK_A))worldTransform_.translation_ -= v2;
+	}
+
 	viewProjection_.UpdateMatrix();
+	//行列の再計算
+	UpdateWorldMatrix4(worldTransform_);
 
-	//デバッグ用表示
-	debugText_->SetPos(50, 50);
-	debugText_->Printf("eye:(%f,%f,%f)",
-		viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
-
-	debugText_->SetPos(50, 70);
-	debugText_->Printf("target:(%f,%f,%f)",
-		viewProjection_.target.x, viewProjection_.target.y, viewProjection_.target.z);
-
-	debugText_->SetPos(50, 90);
-	debugText_->Printf("target:(%f,%f,%f)",
-		viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);
+	debugText_->SetPos(50, 130);
+	debugText_->Printf("cameraWASD mode: %d\n", mode);
 }
 
 void GameScene::Draw() {
@@ -99,7 +138,6 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 	// 深度バッファクリア
 	dxCommon_->ClearDepthBuffer();
-
 #pragma endregion
 
 #pragma region 3Dオブジェクト描画
@@ -109,8 +147,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	//3dモデル描画
-	player_->Draw(viewProjection_);
+	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
 
 
 	// 3Dオブジェクト描画後処理
@@ -124,6 +161,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+	/*sprite_->Draw();*/
 
 	// デバッグテキストの描画
 	debugText_->DrawAll(commandList);
