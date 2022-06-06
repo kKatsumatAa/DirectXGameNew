@@ -10,19 +10,11 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete model_;
-	delete debugCamera_;
+	delete player_;
 }
 
 void GameScene::Initialize() {
-	//乱数シード生成器
-	std::random_device seed_gen;
-	//メルセンヌツイスター
-	std::mt19937_64 engine(seed_gen());
-	//乱数範囲
-	std::uniform_real_distribution<float> posDist(-10.0f, 10.0f);
-	std::uniform_real_distribution<float> rotDist(0.0f, pi * 2);
-	//乱数エンジンを渡し、指定範囲からランダムな数値を得る
-	//float value = dist(engine);
+	
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
@@ -34,11 +26,11 @@ void GameScene::Initialize() {
 	//3Dモデルの生成
 	model_ = Model::Create();
 
+	player_ = new Player();
+	player_->Initialize(model_, textureHandle_);
+
 	//ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
-
-	//デバッグカメラの生成
-	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
 
 	//軸方向表示の表示を有効にする
 	AxisIndicator::GetInstance()->SetVisible(true);
@@ -48,152 +40,46 @@ void GameScene::Initialize() {
 	//ライン描画が参照するビュープロジェクションを指定する（アドレス渡し）
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
 
-	// 親(Root)
-		//ワールドトランスフォーム初期化
-	worldTransforms_[PartId::kRoot].Initialize();
-
-	//脊髄
-	// x,y,zの位置を設定
-	worldTransforms_[PartId::kSpine].translation_ = { 0, 2.f, 0 };//ローカル座標
-	worldTransforms_[PartId::kSpine].parent_ = &worldTransforms_[PartId::kRoot];
-	worldTransforms_[PartId::kSpine].Initialize();
-
-	//上半身
-	//胸
-	worldTransforms_[PartId::kChest].translation_ = { 0, 2.0f, 0 }; //ローカル座標
-	worldTransforms_[PartId::kChest].parent_ = &worldTransforms_[PartId::kSpine];
-	worldTransforms_[PartId::kChest].Initialize();
-	//頭
-	worldTransforms_[PartId::kHead].translation_ = { 0, 2.f, 0 }; //ローカル座標
-	worldTransforms_[PartId::kHead].parent_ = &worldTransforms_[PartId::kChest];
-	worldTransforms_[PartId::kHead].Initialize();
-	//左手
-	worldTransforms_[PartId::kArmL].translation_ = { 2.f, 0, 0 }; //ローカル座標
-	worldTransforms_[PartId::kArmL].parent_ = &worldTransforms_[PartId::kChest];
-	worldTransforms_[PartId::kArmL].Initialize();
-	//右手
-	worldTransforms_[PartId::kArmR].translation_ = { -2.f, 0, 0 }; //ローカル座標
-	worldTransforms_[PartId::kArmR].parent_ = &worldTransforms_[PartId::kChest];
-	worldTransforms_[PartId::kArmR].Initialize();
-	//左手2
-	worldTransforms_[PartId::kArmL2].translation_ = { 0, -2.f, 0 }; //ローカル座標
-	worldTransforms_[PartId::kArmL2].parent_ = &worldTransforms_[PartId::kArmL];
-	worldTransforms_[PartId::kArmL2].Initialize();
-	//右手2						
-	worldTransforms_[PartId::kArmR2].translation_ = { -0, -2.f, 0 }; //ローカル座標
-	worldTransforms_[PartId::kArmR2].parent_ = &worldTransforms_[PartId::kArmR];
-	worldTransforms_[PartId::kArmR2].Initialize();
-
-
-	//下半身
-	//尻
-	worldTransforms_[PartId::kHip].translation_ = { 0, -2.0f, 0 }; //ローカル座標
-	worldTransforms_[PartId::kHip].parent_ = &worldTransforms_[PartId::kSpine];
-	worldTransforms_[PartId::kHip].Initialize();
-	//左足
-	worldTransforms_[PartId::kLegL].translation_ = { 2.f, -2.f, 0 }; //ローカル座標
-	worldTransforms_[PartId::kLegL].parent_ = &worldTransforms_[PartId::kHip];
-	worldTransforms_[PartId::kLegL].Initialize();
-	//右足
-	worldTransforms_[PartId::kLegR].translation_ = { -2.f, -2.f, 0 }; //ローカル座標
-	worldTransforms_[PartId::kLegR].parent_ = &worldTransforms_[PartId::kHip];
-	worldTransforms_[PartId::kLegR].Initialize();
-	//左足2
-	worldTransforms_[PartId::kLegL2].translation_ = { 0, -2.f, 0 }; //ローカル座標
-	worldTransforms_[PartId::kLegL2].parent_ = &worldTransforms_[PartId::kLegL];
-	worldTransforms_[PartId::kLegL2].Initialize();
-	//右足2						
-	worldTransforms_[PartId::kLegR2].translation_ = { 0, -2.f, 0 }; //ローカル座標
-	worldTransforms_[PartId::kLegR2].parent_ = &worldTransforms_[PartId::kLegR];
-	worldTransforms_[PartId::kLegR2].Initialize();
-
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 }
 
 void GameScene::Update() {
+	
 
+
+	player_->Update();
+
+	const float kEyeSpeed = 0.2f;
+	if (input_->PushKey(DIK_W)) viewProjection_.eye.z += kEyeSpeed;
+	else if (input_->PushKey(DIK_S)) viewProjection_.eye.z -= kEyeSpeed;
+
+	if (input_->PushKey(DIK_A)) viewProjection_.target.x -= kEyeSpeed;
+	else if (input_->PushKey(DIK_D)) viewProjection_.target.x += kEyeSpeed;
+
+	//up回転
+	const float kUprotSpeed = 0.05f;
+	if (input_->PushKey(DIK_SPACE))
 	{
-		move.x = (float)(input_->PushKey(DIK_RIGHT) - input_->PushKey(DIK_LEFT));
-
-		if (worldTransforms_[PartId::kRoot].translation_.y > 0) move.y += gravity;
-		else move.y = 0;
-
-		if (input_->TriggerKey(DIK_SPACE) && !isJump)//ジャンプ
-		{
-			isJump = true;
-			move.y = jumpPow;
-		}
-
-		//移動
-		{
-			worldTransforms_[PartId::kRoot].translation_ += move;
-			if (worldTransforms_[PartId::kRoot].translation_.y <= 0)
-			{
-				worldTransforms_[PartId::kRoot].translation_.y = 0;
-				isJump = false;
-			}
-		}
-		{//回転
-			worldTransforms_[0].rotation_ += { 0,
-				(float)(input_->PushKey(DIK_D) - input_->PushKey(DIK_A)) * 0.1f,
-				0 };
-			/*worldTransforms_[0].rotation_ += {
-				(float)(input_->PushKey(DIK_W) - input_->PushKey(DIK_S)) * 0.1f,
-					0, 0 };*/
-
-			
-
-			if (input_->PushKey(DIK_LSHIFT))isDash = true;
-			else isDash = false;
-
-			if (input_->PushKey(DIK_W))
-			{
-				if (worldTransforms_[kArmL].rotation_.x >= maxRote
-					|| worldTransforms_[kArmL].rotation_.x <= minRote)
-				{
-					roteSpeed = -roteSpeed;
-				}
-				worldTransforms_[kArmL].rotation_ += roteSpeed + roteSpeed * isDash;
-				worldTransforms_[kLegR].rotation_ += roteSpeed + roteSpeed * isDash;
-				worldTransforms_[kArmR].rotation_ -= roteSpeed + roteSpeed * isDash;
-				worldTransforms_[kLegL].rotation_ -= roteSpeed + roteSpeed * isDash;
-			}
-			
-
-			worldTransforms_[kHead].rotation_ += {0.1f, 0.1f, 0.1f};
-			f += 0.1f;
-			worldTransforms_[kHead].translation_.y = 4.5f + sinf(f) * 2;
-		}
-		
-		for (size_t i = 0; i < kNumPartId; i++)
-		{
-			if (worldTransforms_[i].rotation_.x != 0.f && !input_->PushKey(DIK_W) && kArmL<=i)//自動で手足が戻る処理
-			{
-				if (worldTransforms_[i].rotation_.x > 0)
-				{
-					worldTransforms_[i].rotation_.x -= 0.05f;
-					if (worldTransforms_[i].rotation_.x < 0) worldTransforms_[i].rotation_.x = 0;
-				}
-
-				if (worldTransforms_[i].rotation_.x < 0)
-				{
-					worldTransforms_[i].rotation_.x += 0.05f;
-					if (worldTransforms_[i].rotation_.x > 0) worldTransforms_[i].rotation_.x = 0;
-				}
-			}
-
-			UpdateWorldMatrix4(worldTransforms_[i]);
-		}
+		viewAngle += kUprotSpeed;
+		viewAngle = fmodf(viewAngle, pi * 2.f);
 	}
+	viewProjection_.up = { cosf(viewAngle), sinf(viewAngle), 0.0f };
+	viewProjection_.UpdateMatrix();
 
 	//デバッグ用表示
 	debugText_->SetPos(50, 50);
-	debugText_->Printf("ROOTtranslation:(%f,%f,%f)", worldTransforms_[0].translation_.x,
-		worldTransforms_[0].translation_.y, worldTransforms_[0].translation_.z);
+	debugText_->Printf("eye:(%f,%f,%f)",
+		viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
+
 	debugText_->SetPos(50, 70);
-	debugText_->Printf("angle:(%f)", RaditoAngle(worldTransforms_[0].rotation_.y));
+	debugText_->Printf("target:(%f,%f,%f)",
+		viewProjection_.target.x, viewProjection_.target.y, viewProjection_.target.z);
+
+	debugText_->SetPos(50, 90);
+	debugText_->Printf("target:(%f,%f,%f)",
+		viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);
 }
 
 void GameScene::Draw() {
@@ -214,16 +100,6 @@ void GameScene::Draw() {
 	// 深度バッファクリア
 	dxCommon_->ClearDepthBuffer();
 
-	//ライン描画が参照するビュープロジェクションを指定する（アドレス渡し）
-	for (int x = 0; x < 31; x++)
-	{
-		PrimitiveDrawer::GetInstance()->DrawLine3d({ -30.f + 2.f * (float)x, 0, -30.f }, { -30.f + 2.f * (float)x, 0, 30.f }, { 0,0,0,1 });
-	}
-
-	for (int z = 0; z < 31; z++)
-	{
-		PrimitiveDrawer::GetInstance()->DrawLine3d({ -30.f, 0, -30.f + 2.f * (float)z }, { 30.f, 0, -30.0f + 2.f * (float)z }, { 0,0,0,1 });
-	}
 #pragma endregion
 
 #pragma region 3Dオブジェクト描画
@@ -234,11 +110,7 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	//3dモデル描画
-	for (size_t i = 2; i < kNumPartId; i++)
-	{
-		model_->Draw(worldTransforms_[i], viewProjection_, textureHandle_);
-	}
-
+	player_->Draw(viewProjection_);
 
 
 	// 3Dオブジェクト描画後処理

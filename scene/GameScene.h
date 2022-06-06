@@ -11,6 +11,7 @@
 #include "WorldTransform.h"
 #include "DebugCamera.h"
 #include "Util.h"
+#include "Player.h"
 
 /// <summary>
 /// ゲームシーン
@@ -43,11 +44,16 @@ class GameScene {
 	/// </summary>
 	void Draw();
 
+
+	//
+	Input* input_ = nullptr;
+	DebugText* debugText_ = nullptr;
+
+
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
-	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
-	DebugText* debugText_ = nullptr;
+
 
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0;
@@ -58,41 +64,10 @@ class GameScene {
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
-	//デバッグカメラ
-	DebugCamera* debugCamera_ = nullptr;
+	Player* player_ = nullptr;
 
-	//ワールドトランスフォーム
-	WorldTransform worldTransforms_[100];
-
-	//パーツ
-	enum PartId {
-		kRoot,//大元
-		kSpine,//脊椎
-		kChest,//胸
-		kHead,//頭
-		kArmL,//左腕
-		kArmR,//右腕
-		kHip,//尻
-		kLegL,//左足
-		kLegR,//右足
-		kLegL2,//左足2
-		kLegR2,//右足2
-		kArmL2,//左腕2
-		kArmR2,//右腕2
-
-		kNumPartId
-	};
-
-	float f = 0;
-	float maxRote = AngletoRadi(45.f);
-	float minRote = AngletoRadi(-45.f);
-	Vector3 roteSpeed = { AngletoRadi(5.f),0,0 };
-	Vector3 move = { 0,0,0 };
-	bool isDash = false;
-	bool isJump = false;
-	const float gravity = -0.1f;
-	const float jumpPow = 1.5f;
-	bool isWalk = false;
+	float viewAngle = AngletoRadi(90.f);
+	
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
