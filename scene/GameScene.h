@@ -62,6 +62,7 @@ class GameScene {
 	Model* model_ = nullptr;
 	//ワールドトランスフォーム
 	WorldTransform worldTransform_;
+	WorldTransform worldTransforms_[10];
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
@@ -70,6 +71,9 @@ class GameScene {
 	float viewAngle = AngletoRadi(90.f);
 
 	bool mode = false;
+
+	float cameraDistans = 20;
+	float cameraTargetAngle = AngletoRadi(-90);
 	
 	/// <summary>
 	/// ゲームシーン用

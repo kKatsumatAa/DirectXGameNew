@@ -15,7 +15,15 @@ GameScene::~GameScene() {
 }
 
 void GameScene::Initialize() {
-	
+	//乱数シード生成器
+	std::random_device seed_gen;
+	//メルセンヌツイスター
+	std::mt19937_64 engine(seed_gen());
+	//乱数範囲
+	std::uniform_real_distribution<float> posDist(-10.0f, 10.0f);
+	std::uniform_real_distribution<float> rotDist(0.0f, pi * 2);
+	//乱数エンジンを渡し、指定範囲からランダムな数値を得る
+	//float value = dist(engine);
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
@@ -32,6 +40,14 @@ void GameScene::Initialize() {
 
 	//ビュープロジェクション初期化
 	viewProjection_.Initialize();
+
+	for (WorldTransform& i : worldTransforms_)
+	{
+		i.Initialize();
+		i.rotation_ = { rotDist(engine),rotDist(engine) ,rotDist(engine) };
+		i.translation_ = { posDist(engine),posDist(engine) ,posDist(engine) };
+		UpdateWorldMatrix4(i);
+	}
 
 	//ワールドトランスフォーム初期化
 	worldTransform_.Initialize();
@@ -95,8 +111,10 @@ void GameScene::Update() {
 	}
 	else
 	{
-		viewProjection_.eye.x += input_->PushKey(DIK_RIGHT) - input_->PushKey(DIK_LEFT);
-		viewProjection_.eye.y += input_->PushKey(DIK_UP) - input_->PushKey(DIK_DOWN);
+		if (input_->PushKey(DIK_RIGHT))cameraTargetAngle += AngletoRadi(2);
+		if (input_->PushKey(DIK_LEFT))cameraTargetAngle -= AngletoRadi(2);
+		viewProjection_.eye.x = cosf(cameraTargetAngle) * cameraDistans;
+		viewProjection_.eye.z = sinf(cameraTargetAngle) * cameraDistans;
 
 		Vector3 v;
 		Vector3 v2={0,1,0};
@@ -107,10 +125,10 @@ void GameScene::Update() {
 
 		v2 = v2.Cross(v);
 
-		if (input_->PushKey(DIK_W))worldTransform_.translation_ += v;
-		if (input_->PushKey(DIK_S))worldTransform_.translation_ -= v;
-		if (input_->PushKey(DIK_D))worldTransform_.translation_ += v2;
-		if (input_->PushKey(DIK_A))worldTransform_.translation_ -= v2;
+		if (input_->PushKey(DIK_W))worldTransform_.translation_ += v * 0.5f;
+		if (input_->PushKey(DIK_S))worldTransform_.translation_ -= v * 0.5f;
+		if (input_->PushKey(DIK_D))worldTransform_.translation_ += v2 * 0.5f;
+		if (input_->PushKey(DIK_A))worldTransform_.translation_ -= v2 * 0.5f;
 	}
 
 	viewProjection_.UpdateMatrix();
@@ -118,7 +136,7 @@ void GameScene::Update() {
 	UpdateWorldMatrix4(worldTransform_);
 
 	debugText_->SetPos(50, 130);
-	debugText_->Printf("cameraWASD mode: %d\n", mode);
+	debugText_->Printf("cameraWASD mode:%d\n", mode);
 }
 
 void GameScene::Draw() {
@@ -148,7 +166,10 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
-
+	for (WorldTransform& i : worldTransforms_)
+	{
+		model_->Draw(i, viewProjection_, textureHandle_);
+	}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
