@@ -15,7 +15,6 @@ GameScene::~GameScene() {
 }
 
 void GameScene::Initialize() {
-	
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
@@ -72,21 +71,21 @@ void GameScene::Update() {
 	}
 	else
 	{
-		const float kEyeSpeed = 0.2f;
-		if (input_->PushKey(DIK_W)) viewProjection_.eye.z += kEyeSpeed;
-		else if (input_->PushKey(DIK_S)) viewProjection_.eye.z -= kEyeSpeed;
+		//const float kEyeSpeed = 0.2f;
+		//if (input_->PushKey(DIK_W)) viewProjection_.eye.z += kEyeSpeed;
+		//else if (input_->PushKey(DIK_S)) viewProjection_.eye.z -= kEyeSpeed;
 
-		if (input_->PushKey(DIK_A)) viewProjection_.target.x -= kEyeSpeed;
-		else if (input_->PushKey(DIK_D)) viewProjection_.target.x += kEyeSpeed;
+		//if (input_->PushKey(DIK_A)) viewProjection_.target.x -= kEyeSpeed;
+		//else if (input_->PushKey(DIK_D)) viewProjection_.target.x += kEyeSpeed;
 
-		//up回転
-		const float kUprotSpeed = 0.05f;
-		if (input_->PushKey(DIK_SPACE))
-		{
-			viewAngle += kUprotSpeed;
-			viewAngle = fmodf(viewAngle, pi * 2.f);
-		}
-		viewProjection_.up = { cosf(viewAngle), sinf(viewAngle), 0.0f };
+		////up回転
+		//const float kUprotSpeed = 0.05f;
+		//if (input_->PushKey(DIK_SPACE))
+		//{
+		//	viewAngle += kUprotSpeed;
+		//	viewAngle = fmodf(viewAngle, pi * 2.f);
+		//}
+		//viewProjection_.up = { cosf(viewAngle), sinf(viewAngle), 0.0f };
 
 		viewProjection_.UpdateMatrix();
 		//viewProjection_.TransferMatrix();

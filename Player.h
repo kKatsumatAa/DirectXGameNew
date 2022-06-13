@@ -22,10 +22,11 @@ private:
 	uint32_t textureHandle_ = 0u;
 	Input* input_ = nullptr;
 	DebugText* debugText_ = nullptr;
-	PlayerBullet* bullet = nullptr;
+	PlayerBullet* bullet_ = nullptr;
 
 public:
 	void Initialize(Model* model, const uint32_t textureHandle);
 	void Update();
 	void Draw(const ViewProjection& view);
+	void Attack();
 };

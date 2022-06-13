@@ -37,9 +37,32 @@ void Player::Update()
 	debugText_->SetPos(50, 110);
 	debugText_->Printf("playerPos:(%f,%f,%f)",
 		worldTransform_.translation_.x, worldTransform_.translation_.y, worldTransform_.translation_.z);
+
+	Attack();
+
+	if (bullet_)
+	{
+		bullet_->Update();
+	}
 }
 
 void Player::Draw(const ViewProjection& view)
 {
 	model_->Draw(worldTransform_, view, textureHandle_);
+	if (bullet_)
+	{
+		bullet_->Draw(view);
+	}
+}
+
+void Player::Attack()
+{
+	if (input_->TriggerKey(DIK_SPACE))
+	{
+		//‹…‚ð¶¬A‰Šú‰»
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(model_, worldTransform_.translation_);
+
+		bullet_ = newBullet;
+	}
 }

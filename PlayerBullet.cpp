@@ -6,7 +6,7 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position)
 
 	model_ = model;
 	//テクスチャ読み込み
-	textureHandle_ = TextureManager::Load("kasuga.png");
+	textureHandle_ = TextureManager::Load("kamata.ico");
 
 	worldTransform.Initialize();
 	worldTransform.translation_ = position;
