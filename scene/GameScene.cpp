@@ -11,6 +11,7 @@ GameScene::GameScene() {}
 GameScene::~GameScene() {
 	delete model_;
 	delete player_;
+	delete debugCamera_;
 }
 
 void GameScene::Initialize() {
@@ -31,6 +32,8 @@ void GameScene::Initialize() {
 
 	//ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
+	//デバッグカメラの生成
+	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
 
 	//軸方向表示の表示を有効にする
 	AxisIndicator::GetInstance()->SetVisible(true);
@@ -46,27 +49,48 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
+#ifdef _DEBUG
+	if (input_->TriggerKey(DIK_Q))
+	{
+		if (isDebugCamera)isDebugCamera = false;
+		else              isDebugCamera = true;
+	}
+#endif
 	
-
 
 	player_->Update();
 
-	const float kEyeSpeed = 0.2f;
-	if (input_->PushKey(DIK_W)) viewProjection_.eye.z += kEyeSpeed;
-	else if (input_->PushKey(DIK_S)) viewProjection_.eye.z -= kEyeSpeed;
-
-	if (input_->PushKey(DIK_A)) viewProjection_.target.x -= kEyeSpeed;
-	else if (input_->PushKey(DIK_D)) viewProjection_.target.x += kEyeSpeed;
-
-	//up回転
-	const float kUprotSpeed = 0.05f;
-	if (input_->PushKey(DIK_SPACE))
+	
+	//カメラ
+	if (isDebugCamera)
 	{
-		viewAngle += kUprotSpeed;
-		viewAngle = fmodf(viewAngle, pi * 2.f);
+		debugCamera_->Update();
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.TransferMatrix();
+		//viewProjection_.TransferMatrix();
 	}
-	viewProjection_.up = { cosf(viewAngle), sinf(viewAngle), 0.0f };
-	viewProjection_.UpdateMatrix();
+	else
+	{
+		const float kEyeSpeed = 0.2f;
+		if (input_->PushKey(DIK_W)) viewProjection_.eye.z += kEyeSpeed;
+		else if (input_->PushKey(DIK_S)) viewProjection_.eye.z -= kEyeSpeed;
+
+		if (input_->PushKey(DIK_A)) viewProjection_.target.x -= kEyeSpeed;
+		else if (input_->PushKey(DIK_D)) viewProjection_.target.x += kEyeSpeed;
+
+		//up回転
+		const float kUprotSpeed = 0.05f;
+		if (input_->PushKey(DIK_SPACE))
+		{
+			viewAngle += kUprotSpeed;
+			viewAngle = fmodf(viewAngle, pi * 2.f);
+		}
+		viewProjection_.up = { cosf(viewAngle), sinf(viewAngle), 0.0f };
+
+		viewProjection_.UpdateMatrix();
+		//viewProjection_.TransferMatrix();
+	}
 
 	//デバッグ用表示
 	debugText_->SetPos(50, 50);
@@ -78,8 +102,8 @@ void GameScene::Update() {
 		viewProjection_.target.x, viewProjection_.target.y, viewProjection_.target.z);
 
 	debugText_->SetPos(50, 90);
-	debugText_->Printf("target:(%f,%f,%f)",
-		viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);
+	debugText_->Printf("target:(%f,%f,%f)%d",
+		viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z,isDebugCamera);
 }
 
 void GameScene::Draw() {

@@ -67,6 +67,10 @@ class GameScene {
 	Player* player_ = nullptr;
 
 	float viewAngle = AngletoRadi(90.f);
+
+	//デバッグカメラ
+	DebugCamera* debugCamera_ = nullptr;
+	bool isDebugCamera = false;
 	
 	/// <summary>
 	/// ゲームシーン用

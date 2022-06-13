@@ -17,8 +17,8 @@ void Player::Initialize(Model* model, const uint32_t textureHandle)
 
 void Player::Update()
 {
-	const float xLimit = 10.f;
-	const float yLimit = 5.f;
+	const float xLimit = 35;
+	const float yLimit = 19;
 
 	Vector3 move = { 0,0,0 };
 	move.x = input_->PushKey(DIK_RIGHT) - input_->PushKey(DIK_LEFT);

@@ -5,6 +5,7 @@
 #include"DebugText.h"
 #include"Util.h"
 #include "Assert.h"
+#include "WinApp.h"
 
 /// <summary>
 /// Ž©ƒLƒƒƒ‰
