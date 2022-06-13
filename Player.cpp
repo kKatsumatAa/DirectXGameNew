@@ -26,7 +26,7 @@ void Player::Update()
 
 	worldTransform_.translation_.x += move.x;
 	worldTransform_.translation_.y += move.y;
-	
+
 	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -xLimit);
 	worldTransform_.translation_.x = min(worldTransform_.translation_.x, xLimit);
 	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -yLimit);
@@ -40,18 +40,18 @@ void Player::Update()
 
 	Attack();
 
-	if (bullet_)
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_)
 	{
-		bullet_->Update();
+		bullet->Update();
 	}
 }
 
 void Player::Draw(const ViewProjection& view)
 {
 	model_->Draw(worldTransform_, view, textureHandle_);
-	if (bullet_)
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_)
 	{
-		bullet_->Draw(view);
+		bullet->Draw(view);
 	}
 }
 
@@ -60,9 +60,9 @@ void Player::Attack()
 	if (input_->TriggerKey(DIK_SPACE))
 	{
 		//ãÖÇê∂ê¨ÅAèâä˙âª
-		PlayerBullet* newBullet = new PlayerBullet();
+		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
 		newBullet->Initialize(model_, worldTransform_.translation_);
-
-		bullet_ = newBullet;
+		//ãÖÇìoò^
+		bullets_.push_back(std::move(newBullet));
 	}
 }

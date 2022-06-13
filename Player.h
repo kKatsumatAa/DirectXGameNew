@@ -22,7 +22,7 @@ private:
 	uint32_t textureHandle_ = 0u;
 	Input* input_ = nullptr;
 	DebugText* debugText_ = nullptr;
-	PlayerBullet* bullet_ = nullptr;
+	std::list< std::unique_ptr<PlayerBullet>> bullets_;
 
 public:
 	void Initialize(Model* model, const uint32_t textureHandle);
