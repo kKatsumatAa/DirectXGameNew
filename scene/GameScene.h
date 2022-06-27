@@ -72,6 +72,9 @@ class GameScene {
 	//デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
 	bool isDebugCamera = false;
+
+	//rayフラグ
+	bool isRay=false;
 	
 	/// <summary>
 	/// ゲームシーン用

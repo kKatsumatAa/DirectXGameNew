@@ -29,6 +29,7 @@ void GameScene::Initialize() {
 	worldTransform_.Initialize();
 	worldTransform2_.Initialize();
 	worldTransform2_.scale_.z=10.f;
+	worldTransform2_.translation_.x = -10.f;
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
 
@@ -103,10 +104,28 @@ void GameScene::Update() {
 	}
 
 	//レイとの当たり判定
-	Vector3 rayLength=
-	worldTransform2_.scale_
-
-
+	Vector3 rayLength = { 0,0,worldTransform2_.scale_.z * 2.f };
+	Vector3 farPos = { worldTransform2_.translation_.x + rayLength.x,
+		worldTransform2_.translation_.y + rayLength.y,
+		worldTransform2_.translation_.z + rayLength.z / 2 };
+	Vector3 nearPos = { worldTransform2_.translation_.x,
+		worldTransform2_.translation_.y - rayLength.y,
+		worldTransform2_.translation_.z - rayLength.z / 2 };
+	rayLength.Normalized();
+	Vector3 objLength = worldTransform_.translation_ - nearPos;
+	Vector3 dotPos = nearPos + rayLength * rayLength.Dot(objLength);
+	Vector3 dotVec = worldTransform_.translation_ - dotPos;
+	float dotLength = dotVec.GetLength();
+	if (dotLength < worldTransform_.scale_.z*2.f
+		&& (worldTransform_.translation_.z + worldTransform_.scale_.z > nearPos.z 
+			&& worldTransform_.translation_.z - worldTransform_.scale_.z < farPos.z))
+	{
+		isRay = true;
+	}
+	else
+	{
+		isRay = false;
+	}
 	//デバッグ用表示
 	debugText_->SetPos(50, 50);
 	debugText_->Printf("eye:(%f,%f,%f)",
@@ -118,7 +137,14 @@ void GameScene::Update() {
 
 	debugText_->SetPos(50, 90);
 	debugText_->Printf("target:(%f,%f,%f)%d",
-		viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z,isDebugCamera);
+		viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);
+
+	if (isRay)
+	{
+		debugText_->SetPos(50, 110);
+		debugText_->Printf("!!!!!HIT!!!!!");
+	}
+
 }
 
 void GameScene::Draw() {
