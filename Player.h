@@ -13,8 +13,7 @@
 class Player
 {
 private:
-	//ワールド変換データ
-	WorldTransform worldTransform_;
+	
 	//モデル
 	Model* model_ = nullptr;
 	//テクスチャハンドル
@@ -23,6 +22,9 @@ private:
 	DebugText* debugText_ = nullptr;
 
 public:
+	//ワールド変換データ
+	WorldTransform worldTransform_;
+
 	void Initialize(Model* model, const uint32_t textureHandle);
 	void Update();
 	void Draw(const ViewProjection& view);

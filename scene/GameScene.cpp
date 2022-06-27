@@ -10,13 +10,11 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete model_;
-	delete player_;
+	//delete player_;
 	delete debugCamera_;
 }
 
 void GameScene::Initialize() {
-	
-
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
@@ -27,11 +25,10 @@ void GameScene::Initialize() {
 	//3Dモデルの生成
 	model_ = Model::Create();
 
-	player_ = new Player();
-	player_->Initialize(model_, textureHandle_);
-
 	//ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
+	worldTransform2_.Initialize();
+	worldTransform2_.scale_.z=10.f;
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
 
@@ -46,6 +43,7 @@ void GameScene::Initialize() {
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
+	viewProjection_.eye = { 0,10,-10 };
 }
 
 void GameScene::Update() {
@@ -58,7 +56,8 @@ void GameScene::Update() {
 #endif
 	
 
-	player_->Update();
+	//player_->Update();
+	//player2_->Update();
 
 	
 	//カメラ
@@ -91,6 +90,22 @@ void GameScene::Update() {
 		viewProjection_.UpdateMatrix();
 		//viewProjection_.TransferMatrix();
 	}
+
+	{
+		Vector3 move = { 0,0,0 };
+		move.x = input_->PushKey(DIK_RIGHT) - input_->PushKey(DIK_LEFT);
+		move.y = input_->PushKey(DIK_UP) - input_->PushKey(DIK_DOWN);
+
+		worldTransform2_.translation_.x += move.x;
+		worldTransform2_.translation_.z += move.y;
+
+		UpdateWorldMatrix4(worldTransform2_);
+	}
+
+	//レイとの当たり判定
+	Vector3 rayLength=
+	worldTransform2_.scale_
+
 
 	//デバッグ用表示
 	debugText_->SetPos(50, 50);
@@ -134,7 +149,9 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	//3dモデル描画
-	player_->Draw(viewProjection_);
+	//player_->Draw(viewProjection_);
+	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+	model_->Draw(worldTransform2_, viewProjection_, textureHandle_);
 
 
 	// 3Dオブジェクト描画後処理

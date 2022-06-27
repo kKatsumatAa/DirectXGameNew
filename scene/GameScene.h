@@ -61,10 +61,11 @@ class GameScene {
 	Model* model_ = nullptr;
 	//ワールドトランスフォーム
 	WorldTransform worldTransform_;
+	WorldTransform worldTransform2_;
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
-	Player* player_ = nullptr;
+	//Player* player_ = nullptr;
 
 	float viewAngle = AngletoRadi(90.f);
 
