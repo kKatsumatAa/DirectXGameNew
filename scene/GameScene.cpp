@@ -113,6 +113,11 @@ void GameScene::Update() {
 				(float)(input_->PushKey(DIK_K) - input_->PushKey(DIK_J)) * 0.1f,
 				0 };
 		}
+		{//拡大
+			worldTransforms_[0].scale_ += { (float)(input_->PushKey(DIK_W) - input_->PushKey(DIK_S)) * 0.1f,
+				(float)(input_->PushKey(DIK_W) - input_->PushKey(DIK_S)) * 0.1f,
+				(float)(input_->PushKey(DIK_W) - input_->PushKey(DIK_S)) * 0.1f };
+		}
 		for (size_t i = 0; i < kNumPartId; i++)
 		{
 			UpdateWorldMatrix4(worldTransforms_[i]);
@@ -121,8 +126,14 @@ void GameScene::Update() {
 
 	//デバッグ用表示
 	debugText_->SetPos(50, 50);
-	debugText_->Printf(":(%f,%f,%f)", worldTransforms_[0].translation_.x,
+	debugText_->Printf("translation:(%f,%f,%f)", worldTransforms_[0].translation_.x,
 		worldTransforms_[0].translation_.y, worldTransforms_[0].translation_.z);
+	debugText_->SetPos(50, 70);
+	debugText_->Printf("rotation:(%f,%f,%f)", worldTransforms_[0].rotation_.x,
+		worldTransforms_[0].rotation_.y, worldTransforms_[0].rotation_.z);
+	debugText_->SetPos(50, 90);
+	debugText_->Printf("scale:(%f,%f,%f)", worldTransforms_[0].scale_.x,
+		worldTransforms_[0].scale_.y, worldTransforms_[0].scale_.z);
 }
 
 void GameScene::Draw() {
