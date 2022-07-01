@@ -17,9 +17,20 @@ void Player::Initialize(Model* model, const uint32_t textureHandle)
 
 void Player::Update()
 {
+	//弾を消す
+	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet)
+		{
+			return bullet->IsDead();
+		}
+	);
+
 	const float xLimit = 35;
 	const float yLimit = 19;
 
+	//回転
+	worldTransform_.rotation_.y += (input_->PushKey(DIK_D) - input_->PushKey(DIK_A))*0.05f;
+
+	//平行移動
 	Vector3 move = { 0,0,0 };
 	move.x = input_->PushKey(DIK_RIGHT) - input_->PushKey(DIK_LEFT);
 	move.y = input_->PushKey(DIK_UP) - input_->PushKey(DIK_DOWN);
@@ -44,6 +55,8 @@ void Player::Update()
 	{
 		bullet->Update();
 	}
+
+	shotTime++;
 }
 
 void Player::Draw(const ViewProjection& view)
@@ -57,11 +70,20 @@ void Player::Draw(const ViewProjection& view)
 
 void Player::Attack()
 {
-	if (input_->TriggerKey(DIK_SPACE))
+	if (input_->PushKey(DIK_SPACE) && shotTime >= shotCool)
 	{
+		shotTime = 0;
+
+		//弾の速度
+		const float kBulletSpeed = 1.0f;
+		Vector3 velocity(0, 0, kBulletSpeed);
+
+		//速度ベクトルを自機の向きに合わせて回転させる
+		Vector3xMatrix4(velocity, worldTransform_.matWorld_,false);
+
 		//球を生成、初期化
 		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
-		newBullet->Initialize(model_, worldTransform_.translation_);
+		newBullet->Initialize(model_, worldTransform_.translation_, velocity);
 		//球を登録
 		bullets_.push_back(std::move(newBullet));
 	}
