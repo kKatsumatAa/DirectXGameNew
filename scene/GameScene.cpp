@@ -61,7 +61,7 @@ void GameScene::Update() {
 
 	
 	//カメラ
-	if (isDebugCamera)
+	if (isDebugCamera)//
 	{
 		debugCamera_->Update();
 		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
