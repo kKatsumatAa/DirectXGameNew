@@ -12,6 +12,7 @@
 #include "DebugCamera.h"
 #include "Util.h"
 #include "Player.h"
+#include "Enemy.h"
 
 /// <summary>
 /// ゲームシーン
@@ -65,6 +66,7 @@ class GameScene {
 	ViewProjection viewProjection_;
 
 	Player* player_ = nullptr;
+	Enemy* enemy_ = nullptr;
 
 	float viewAngle = AngletoRadi(90.f);
 
