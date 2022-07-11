@@ -20,6 +20,14 @@ private:
 	Model* model_ = nullptr;
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
+	//行動フェーズ
+	static enum class Phase
+	{
+		Approach,//接近する
+		Leave,   //離脱する
+	};
+	//フェーズ
+	Phase phase_ = Phase::Approach;
 public:
 
 
@@ -31,3 +39,8 @@ public:
 	void Update();
 	void Draw(const ViewProjection& view);
 };
+
+
+
+const Vector3 approachSpeed = { 0,0,-1 };
+const Vector3 leaveSpeed = { 0,0,1 };
