@@ -33,10 +33,15 @@ public:
 
 	//関数
 private:
-
+	//メンバ関数ポインタ(メンバ関数のポインタを入れる)
+	void (Enemy::* pFunc)();
+	//メンバ関数ポインタのテーブル
+	static void (Enemy::* spFuncTable[])();
 public:
 	void Initialize(Model* model, const uint32_t textureHandle);
 	void Update();
+	void Approach();
+	void Leave();
 	void Draw(const ViewProjection& view);
 };
 
