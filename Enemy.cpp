@@ -8,64 +8,68 @@ void Enemy::Initialize(Model* model, const uint32_t textureHandle)
 	textureHandle_ = textureHandle;
 
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = { 0,0,100 };
+	worldTransform_.translation_ = { 0,5,100 };
 
-	//pFunc = &Enemy::Approach;
-	phase_ = Phase::Approach;
+	state = new EnemyStateApproach;
+	state->SetEnemy(this);
 }
 
-void (Enemy::*Enemy::spFuncTable[])() = {
-	&Enemy::Approach,//0
-	&Enemy::Leave    //1
-};
+Enemy::~Enemy()
+{
+	delete state;
+}
 
 void Enemy::Update()
 {
-	////メンバ関数ポインタに入っている関数を呼び出す
-	//(this->*pFunc)();
-	//メンバ関数ポインタに入っている関数を呼び出す
-	(this->*spFuncTable[static_cast<size_t>(phase_)])();
+	state->Update();
 
-	//switch (phase_)
-	//{
-	//case Phase::Approach:
-	///*default:*/
-	//	//移動（ベクトルを加算）
-	//	worldTransform_.translation_ += approachSpeed;
-	//	//既定の位置に達したら離脱
-	//	if (worldTransform_.translation_.z < 0.0f)
-	//	{
-	//		phase_ = Phase::Leave;
-	//	}
-	//	break;
-
-	//case Phase::Leave:
-	//	//移動
-	//	worldTransform_.translation_ += leaveSpeed;
-	//	break;
-	//}
-	//// worldTransform_.translation_ += {0, 0, -1.0f};
 	UpdateWorldMatrix4(worldTransform_);
 }
 
-void Enemy::Approach()
+void Enemy::ChangeState(EnemyState* state)
 {
-	//移動（ベクトルを加算）
-	worldTransform_.translation_ += approachSpeed;
-	//既定の位置に達したら離脱
-	if (worldTransform_.translation_.z < 0.0f)
-	{
-		phase_ = Phase::Leave;
-	}
-}
-
-void Enemy::Leave()
-{
-	//移動
-	worldTransform_.translation_ += leaveSpeed;
+	delete this->state;
+	this->state = state;
+	state->SetEnemy(this);
 }
 
 void Enemy::Draw(const ViewProjection& view)
 {
 	model_->Draw(worldTransform_, view, textureHandle_);
+}
+
+Vector3 Enemy::GetTrans()
+{
+	return Vector3(worldTransform_.translation_);
+}
+
+void Enemy::MoveTrans(const Vector3& vec)
+{
+	worldTransform_.translation_ += vec;
+}
+
+
+//----------------------------------------------
+void EnemyStateApproach::Update()
+{
+	//移動（ベクトルを加算）
+	enemy->MoveTrans(approachSpeed);
+	//既定の位置に達したら離脱
+	if (enemy->GetTrans().z < 0.0f)
+	{
+		enemy->ChangeState(new EnemyStateLeave);
+	}
+}
+
+//----------------------------------------------
+void EnemyStateLeave::Update()
+{
+	//移動
+	enemy->MoveTrans(leaveSpeed);
+}
+
+//----------------------------------------------
+void EnemyState::SetEnemy(Enemy* enemy)
+{
+	this->enemy = enemy;
 }

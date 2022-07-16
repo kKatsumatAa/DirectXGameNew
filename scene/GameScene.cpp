@@ -24,6 +24,7 @@ void GameScene::Initialize() {
 
 	//ファイル名を指定してテクスチャを読み込む
 	textureHandle_ = TextureManager::Load("kasuga.png");
+	textureHandle2_ = TextureManager::Load("uvChecker.png");
 	//3Dモデルの生成
 	model_ = Model::Create();
 
@@ -49,7 +50,7 @@ void GameScene::Initialize() {
 
 	Enemy* enemy = new Enemy;
 	enemy_ = enemy;
-	enemy_->Initialize(model_,textureHandle_);
+	enemy_->Initialize(model_,textureHandle2_);
 }
 
 void GameScene::Update() {

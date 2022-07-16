@@ -7,6 +7,18 @@
 #include "Assert.h"
 #include "WinApp.h"
 
+class Enemy;
+
+class EnemyState
+{
+protected:
+	Enemy* enemy;
+
+public:
+	void SetEnemy(Enemy* enemy);
+	virtual void Update() = 0;
+};
+
 ///<summary>
 ///敵
 ///</summary>
@@ -20,32 +32,37 @@ private:
 	Model* model_ = nullptr;
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
-	//行動フェーズ
-	static enum class Phase
-	{
-		Approach,//接近する
-		Leave,   //離脱する
-	};
-	//フェーズ
-	Phase phase_ = Phase::Approach;
+	EnemyState* state;
 public:
 
 
 	//関数
 private:
-	//メンバ関数ポインタ(メンバ関数のポインタを入れる)
-	void (Enemy::* pFunc)();
-	//メンバ関数ポインタのテーブル
-	static void (Enemy::* spFuncTable[])();
+
 public:
 	void Initialize(Model* model, const uint32_t textureHandle);
+	~Enemy();
+
 	void Update();
-	void Approach();
-	void Leave();
+	void ChangeState(EnemyState* state);
 	void Draw(const ViewProjection& view);
+
+	Vector3 GetTrans();
+	void MoveTrans(const Vector3& vec);
+};
+
+class EnemyStateApproach :public EnemyState
+{
+public:
+	void Update();
+};
+
+class EnemyStateLeave :public EnemyState
+{
+public:
+	void Update();
 };
 
 
-
 const Vector3 approachSpeed = { 0,0,-1 };
-const Vector3 leaveSpeed = { 0,0,1 };
+const Vector3 leaveSpeed = { -1,1,0 };
