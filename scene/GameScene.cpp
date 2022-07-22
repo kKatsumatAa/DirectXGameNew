@@ -25,6 +25,7 @@ void GameScene::Initialize() {
 	//ファイル名を指定してテクスチャを読み込む
 	textureHandle_ = TextureManager::Load("kasuga.png");
 	textureHandle2_ = TextureManager::Load("uvChecker.png");
+	textureHandle3_ = TextureManager::Load("kamata.ico");
 	//3Dモデルの生成
 	model_ = Model::Create();
 

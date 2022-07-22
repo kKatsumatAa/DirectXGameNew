@@ -6,6 +6,7 @@
 #include"Util.h"
 #include "Assert.h"
 #include "WinApp.h"
+#include"EnemyBullet.h"
 
 class Enemy;
 
@@ -33,8 +34,13 @@ private:
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
 	EnemyState* state;
+	//弾
+	std::list< std::unique_ptr<EnemyBullet>> bullets_;
+	
+	
 public:
-
+	int shotTime = 0;
+	static const int shotCool = 60;
 
 	//関数
 private:
@@ -42,8 +48,10 @@ private:
 public:
 	void Initialize(Model* model, const uint32_t textureHandle);
 	~Enemy();
+	void InitializeApproach();
 
 	void Update();
+	void Fire();
 	void ChangeState(EnemyState* state);
 	void Draw(const ViewProjection& view);
 
@@ -64,5 +72,5 @@ public:
 };
 
 
-const Vector3 approachSpeed = { 0,0,-1 };
-const Vector3 leaveSpeed = { -1,1,0 };
+const Vector3 approachSpeed = { 0,0,-0.2 };
+const Vector3 leaveSpeed = { -0.2,0.2,0 };

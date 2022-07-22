@@ -12,6 +12,9 @@ void Enemy::Initialize(Model* model, const uint32_t textureHandle)
 
 	state = new EnemyStateApproach;
 	state->SetEnemy(this);
+
+	//接近フェーズ初期化
+	InitializeApproach();
 }
 
 Enemy::~Enemy()
@@ -19,16 +22,52 @@ Enemy::~Enemy()
 	delete state;
 }
 
+void Enemy::InitializeApproach()
+{
+	//発射タイマーを初期化
+	shotTime = shotCool;
+}
+
 void Enemy::Update()
 {
+	//弾を消す
+	bullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet)
+		{
+			return bullet->IsDead();
+		}
+	);
+
 	state->Update();
 
 	UpdateWorldMatrix4(worldTransform_);
+
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets_)
+	{
+		bullet->Update();
+	}
+
+	shotTime++;
+}
+
+void Enemy::Fire()
+{
+	//弾の速度
+	const float kBulletSpeed = -1.0f;
+	Vector3 velocity(0, 0, kBulletSpeed);
+
+	//速度ベクトルを自機の向きに合わせて回転させる
+	Vector3xMatrix4(velocity, worldTransform_.matWorld_, false);
+
+	//球を生成、初期化
+	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
+	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+	//球を登録
+	bullets_.push_back(std::move(newBullet));
 }
 
 void Enemy::ChangeState(EnemyState* state)
 {
-	delete this->state;
+	//delete this->state;
 	this->state = state;
 	state->SetEnemy(this);
 }
@@ -36,6 +75,11 @@ void Enemy::ChangeState(EnemyState* state)
 void Enemy::Draw(const ViewProjection& view)
 {
 	model_->Draw(worldTransform_, view, textureHandle_);
+
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets_)
+	{
+		bullet->Draw(view);
+	}
 }
 
 Vector3 Enemy::GetTrans()
@@ -58,6 +102,12 @@ void EnemyStateApproach::Update()
 	if (enemy->GetTrans().z < 0.0f)
 	{
 		enemy->ChangeState(new EnemyStateLeave);
+	}
+
+	if (enemy->shotTime >= enemy->shotCool)
+	{
+		enemy->shotTime = 0;
+		enemy->Fire();
 	}
 }
 
