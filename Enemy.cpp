@@ -45,8 +45,6 @@ void Enemy::Update()
 	{
 		bullet->Update();
 	}
-
-	shotTime++;
 }
 
 void Enemy::Fire()
@@ -104,6 +102,8 @@ void EnemyStateApproach::Update()
 		enemy->ChangeState(new EnemyStateLeave);
 	}
 
+	//¶¬ˆ—‚ÍÚ‹ß‚ÌŽž‚Ì‚Ý
+	enemy->shotTime++;
 	if (enemy->shotTime >= enemy->shotCool)
 	{
 		enemy->shotTime = 0;
