@@ -32,33 +32,36 @@ void Enemy::InitializeApproach()
 
 void Enemy::Update()
 {
-	//íeÇè¡Ç∑
-	bullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet)
-		{
-			return bullet->IsDead();
-		}
-	);
+	//timer
+	for (std::unique_ptr<TimedCall>& time : timedCalls_)
+	{
+		time->Update();
+	}
+	//íe
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets_)
+	{
+		bullet->Update();
+	}
+	
+
 	//timerÇè¡Ç∑
 	timedCalls_.remove_if([](std::unique_ptr<TimedCall>& time)
 		{
 			return time->IsFinished();
 		}
 	);
-
+	//íeÇè¡Ç∑
+	bullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet)
+		{
+			return bullet->IsDead();
+		}
+	);
+	
 	state->Update();
 
 	UpdateWorldMatrix4(worldTransform_);
 
-	//íe
-	for (std::unique_ptr<EnemyBullet>& bullet : bullets_)
-	{
-		bullet->Update();
-	}
-	//timer
-	for (std::unique_ptr<TimedCall>& time : timedCalls_)
-	{
-		time->Update();
-	}
+
 }
 
 void Enemy::Fire()
@@ -79,7 +82,7 @@ void Enemy::Fire()
 
 void Enemy::ChangeState(EnemyState* state)
 {
-	//delete this->state;
+	delete this->state;
 	this->state = state;
 	state->SetEnemy(this);
 }
@@ -119,6 +122,12 @@ void Enemy::MoveTrans(const Vector3& vec)
 	worldTransform_.translation_ += vec;
 }
 
+void Enemy::RemoveTimeCall()
+{
+	timedCalls_.remove_if
+	([](std::unique_ptr<TimedCall>& time){return true;});
+}
+
 
 //----------------------------------------------
 void EnemyStateApproach::Update()
@@ -128,16 +137,9 @@ void EnemyStateApproach::Update()
 	//ä˘íËÇÃà íuÇ…íBÇµÇΩÇÁó£íE
 	if (enemy->GetTrans().z < 0.0f)
 	{
+		enemy->RemoveTimeCall();
 		enemy->ChangeState(new EnemyStateLeave);
 	}
-
-	////ê∂ê¨èàóùÇÕê⁄ãﬂÇÃéûÇÃÇ›
-	//enemy->shotTime++;
-	//if (enemy->shotTime >= enemy->shotCool)
-	//{
-	//	enemy->shotTime = 0;
-	//	enemy->Fire();
-	//}
 }
 
 //----------------------------------------------

@@ -37,15 +37,15 @@ private:
 	EnemyState* state;
 	//íe
 	std::list< std::unique_ptr<EnemyBullet>> bullets_;
-	
-	
+	static const int shotCool = 60;
+	std::list<std::unique_ptr<TimedCall>> timedCalls_;
 public:
 	//int shotTime = 0;
-	static const int shotCool = 60;
+	
 
 	//ä÷êî
 private:
-	std::list<std::unique_ptr<TimedCall>> timedCalls_;
+	
 
 public:
 	void Initialize(Model* model, const uint32_t textureHandle);
@@ -64,6 +64,8 @@ public:
 
 	Vector3 GetTrans();
 	void MoveTrans(const Vector3& vec);
+
+	void RemoveTimeCall();
 };
 
 class EnemyStateApproach :public EnemyState
