@@ -25,7 +25,9 @@ Enemy::~Enemy()
 void Enemy::InitializeApproach()
 {
 	//発射タイマーを初期化
-	shotTime = shotCool;
+	//shotTime = shotCool;
+
+	ShotResetTimer();
 }
 
 void Enemy::Update()
@@ -36,14 +38,26 @@ void Enemy::Update()
 			return bullet->IsDead();
 		}
 	);
+	//timerを消す
+	timedCalls_.remove_if([](std::unique_ptr<TimedCall>& time)
+		{
+			return time->IsFinished();
+		}
+	);
 
 	state->Update();
 
 	UpdateWorldMatrix4(worldTransform_);
 
+	//弾
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets_)
 	{
 		bullet->Update();
+	}
+	//timer
+	for (std::unique_ptr<TimedCall>& time : timedCalls_)
+	{
+		time->Update();
 	}
 }
 
@@ -68,6 +82,21 @@ void Enemy::ChangeState(EnemyState* state)
 	//delete this->state;
 	this->state = state;
 	state->SetEnemy(this);
+}
+
+void Enemy::ShotResetTimer()
+{
+	//発射
+	Fire();
+
+	//発射タイマーリセット
+	timedCalls_.push_back(std::make_unique<TimedCall>
+		(std::bind(&Enemy::ShotResetTimer, this), shotCool));
+	//↑コンストラクタも起動↓
+	//TimedCall::TimedCall(std::function<void()> f, uint32_t time)
+	//①.shotresetTimerをfunctionに入れる
+	//②.TimedCallのインスタンスを作成
+	//③.それをリストに追加(push_buck)
 }
 
 void Enemy::Draw(const ViewProjection& view)
@@ -102,13 +131,13 @@ void EnemyStateApproach::Update()
 		enemy->ChangeState(new EnemyStateLeave);
 	}
 
-	//生成処理は接近の時のみ
-	enemy->shotTime++;
-	if (enemy->shotTime >= enemy->shotCool)
-	{
-		enemy->shotTime = 0;
-		enemy->Fire();
-	}
+	////生成処理は接近の時のみ
+	//enemy->shotTime++;
+	//if (enemy->shotTime >= enemy->shotCool)
+	//{
+	//	enemy->shotTime = 0;
+	//	enemy->Fire();
+	//}
 }
 
 //----------------------------------------------

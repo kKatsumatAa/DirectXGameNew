@@ -7,6 +7,7 @@
 #include "Assert.h"
 #include "WinApp.h"
 #include"EnemyBullet.h"
+#include"TimedCall.h"
 
 class Enemy;
 
@@ -39,11 +40,12 @@ private:
 	
 	
 public:
-	int shotTime = 0;
+	//int shotTime = 0;
 	static const int shotCool = 60;
 
 	//関数
 private:
+	std::list<std::unique_ptr<TimedCall>> timedCalls_;
 
 public:
 	void Initialize(Model* model, const uint32_t textureHandle);
@@ -53,6 +55,11 @@ public:
 	void Update();
 	void Fire();
 	void ChangeState(EnemyState* state);
+	/// <summary>
+	/// 弾発射、タイマーリセット
+	/// </summary>
+	/// <param name="view"></param>
+	void ShotResetTimer();
 	void Draw(const ViewProjection& view);
 
 	Vector3 GetTrans();
