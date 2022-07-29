@@ -51,7 +51,9 @@ void GameScene::Initialize() {
 
 	Enemy* enemy = new Enemy;
 	enemy_ = enemy;
+	enemy_->SetPlayer(player_);
 	enemy_->Initialize(model_,textureHandle2_);
+	
 }
 
 void GameScene::Update() {

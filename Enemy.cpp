@@ -68,7 +68,11 @@ void Enemy::Fire()
 {
 	//弾の速度
 	const float kBulletSpeed = -1.0f;
-	Vector3 velocity(0, 0, kBulletSpeed);
+
+	Vector3 length = player_->GetWorldPos() - GetWorldPos();
+	length.Normalized();
+
+	Vector3 velocity(length);
 
 	//速度ベクトルを自機の向きに合わせて回転させる
 	Vector3xMatrix4(velocity, worldTransform_.matWorld_, false);
@@ -126,6 +130,16 @@ void Enemy::RemoveTimeCall()
 {
 	timedCalls_.remove_if
 	([](std::unique_ptr<TimedCall>& time){return true;});
+}
+
+Vector3 Enemy::GetWorldPos()
+{
+	Vector3 pos;
+	pos.x = worldTransform_.matWorld_.m[3][0];
+	pos.y = worldTransform_.matWorld_.m[3][1];
+	pos.z = worldTransform_.matWorld_.m[3][2];
+
+	return Vector3(pos);
 }
 
 

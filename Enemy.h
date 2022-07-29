@@ -8,6 +8,10 @@
 #include "WinApp.h"
 #include"EnemyBullet.h"
 #include"TimedCall.h"
+#include"Player.h"
+
+//自機クラスの前方宣言(インクルードする代わりに)
+class Player;
 
 class Enemy;
 
@@ -39,6 +43,9 @@ private:
 	std::list< std::unique_ptr<EnemyBullet>> bullets_;
 	static const int shotCool = 60;
 	std::list<std::unique_ptr<TimedCall>> timedCalls_;
+
+	//自キャラ
+	Player* player_ = nullptr;
 public:
 	//int shotTime = 0;
 	
@@ -66,6 +73,10 @@ public:
 	void MoveTrans(const Vector3& vec);
 
 	void RemoveTimeCall();
+
+	void SetPlayer(Player* player) { player_ = player;}
+
+	Vector3 GetWorldPos();
 };
 
 class EnemyStateApproach :public EnemyState

@@ -88,3 +88,13 @@ void Player::Attack()
 		bullets_.push_back(std::move(newBullet));
 	}
 }
+
+Vector3 Player::GetWorldPos()
+{
+	Vector3 pos;
+	pos.x = worldTransform_.matWorld_.m[3][0];
+	pos.y = worldTransform_.matWorld_.m[3][1];
+	pos.z = worldTransform_.matWorld_.m[3][2];
+
+	return Vector3(pos);
+}

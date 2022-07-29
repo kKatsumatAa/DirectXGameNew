@@ -31,4 +31,6 @@ public:
 	void Update();
 	void Draw(const ViewProjection& view);
 	void Attack();
+
+	Vector3 GetWorldPos();
 };
