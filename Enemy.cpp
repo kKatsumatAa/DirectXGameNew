@@ -72,7 +72,7 @@ void Enemy::Fire()
 	Vector3 length = player_->GetWorldPos() - GetWorldPos();
 	length.Normalized();
 
-	Vector3 velocity(length);
+	Vector3 velocity(1,0,0/*length*/);
 
 	//速度ベクトルを自機の向きに合わせて回転させる
 	Vector3xMatrix4(velocity, worldTransform_.matWorld_, false);
@@ -80,6 +80,7 @@ void Enemy::Fire()
 	//球を生成、初期化
 	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+	newBullet->SetPlayer(player_);
 	//球を登録
 	bullets_.push_back(std::move(newBullet));
 }

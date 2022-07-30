@@ -5,6 +5,7 @@
 #include"WorldTransform.h"
 #include <cassert>
 #include "Util.h"
+#include "Player.h"
 
 class EnemyBullet
 {
@@ -16,6 +17,7 @@ private:
 	static const int32_t lifeTime = 60 * 5;
 	int32_t deathTimer_ = lifeTime;
 	bool isDead_ = false;
+	Player* player_;
 public:
 	Vector3 velocity_;
 
@@ -24,6 +26,6 @@ public:
 	void Update();
 	void Draw(const ViewProjection& viewProjection);
 	bool IsDead() const { return isDead_; }
-
+	void SetPlayer(Player* player) { player_ = player; }
 };
 

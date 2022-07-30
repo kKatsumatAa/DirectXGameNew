@@ -175,10 +175,10 @@ float RaditoAngle(const float& radian)
 	return radian / pi * 180;
 }
 
-//float GetRadianVector3(const Vector3& v1, const Vector3& v2)
-//{
-//	return v1.Dot(v2) / (v1.GetLength() * v2.GetLength());
-//}
+float GetRadianVector3(const Vector3& v1, const Vector3& v2)
+{
+	return acos(v1.Dot(v2) / (v1.GetLength() * v2.GetLength()));
+}
 
 Vector3 LerpVector3(const Vector3& v1, const Vector3& v2, float t)
 {
@@ -187,12 +187,10 @@ Vector3 LerpVector3(const Vector3& v1, const Vector3& v2, float t)
 
 Vector3 SlerpVector3(const Vector3& v1, const Vector3& v2, float t)
 {
-	float radian = 0;
-	radian = (v1.Dot(v2) / (v1.GetLength() * v2.GetLength())) /*/ (v1.GetLength() * v2.GetLength());*/;
+	float radian = GetRadianVector3(v1, v2);
 
-	Vector3 v=((1 - t) * v1.GetLength() + t * v2.GetLength()) *
-	( sinf((1 - t) * radian) / sinf(radian) * v1.GetNormalized()
-	 + sinf(t * radian) / sinf(radian) * v2.GetNormalized());
+	Vector3 v = ((1 - t) * v1.GetLength() + t * v2.GetLength()) *
+		(sinf((1 - t) * radian) / sinf(radian) * v1.GetNormalized() + sinf(t * radian) / sinf(radian) * v2.GetNormalized());
 
 	return v;
 }

@@ -32,7 +32,27 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 
 void EnemyBullet::Update()
 {
+//ホーミング
+	Vector3 toPlayer = player_->GetWorldPos() - worldTransform.translation_;
+
+	toPlayer.Normalized();
+	velocity_.Normalized();
+
+	velocity_ = SlerpVector3(velocity_, toPlayer, 0.1f);
+
 	worldTransform.translation_ += velocity_;
+
+//角度をvectorにそろえる
+	//yじくまわり
+	worldTransform.rotation_.y = std::atan2(velocity_.x, velocity_.z);
+	//y軸周りに-θ回す回転行列
+	Matrix4 m4;
+	SetRotationMatrix(m4, -worldTransform.rotation_.y, 'y');
+	//velocityに回転行列を掛け算してvelocityZを求める（資料参照）
+	Vector3 v = velocity_;
+	Vector3xMatrix4(v, m4, false);//ここで上下の角度を反転
+	//x軸周り角度
+	worldTransform.rotation_.x = std::atan2(-v.y, v.z);
 
 	UpdateWorldMatrix4(worldTransform);
 

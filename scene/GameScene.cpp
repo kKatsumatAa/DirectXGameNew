@@ -150,9 +150,10 @@ void GameScene::Draw() {
 	player_->Draw(viewProjection_);
 	if(enemy_!=nullptr) enemy_->Draw(viewProjection_);
 
-	Vector3 v1 = { 10.0f,0,0 };
+	/*Vector3 v1 = { 10.0f,0,0 };
 	Vector3 v2 = { 0,10.0f,0 };
 	Vector3 v = { 0,0,0 };
+
 	debugText_->SetPos(50, 130);
 	debugText_->Printf("vecLerp:(%f,%f,%f)%d",
 		SlerpVector3(v1, v2, (num)).x,
@@ -163,8 +164,9 @@ void GameScene::Draw() {
 	PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,0,0 }, v2, { 0,0,1,1 });
 	PrimitiveDrawer::GetInstance()->DrawLine3d(v1, v2, { 1,1,1,1 });
 	Vector3 p = SlerpVector3(v1, v2, (num));
-	float p2 = v1.Dot(v2);
+	Vector3 p2 = LerpVector3(v1, v2, (num));
 	PrimitiveDrawer::GetInstance()->DrawLine3d(v, p, { 1,1,1,1 });
+	PrimitiveDrawer::GetInstance()->DrawLine3d(v, p2, { 1,1,0.5f,1 });*/
 
 
 	// 3Dオブジェクト描画後処理
