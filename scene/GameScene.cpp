@@ -64,6 +64,9 @@ void GameScene::Update() {
 		else              isDebugCamera = true;
 	}
 #endif
+
+	num += 0.01;
+	if (num >= 1.0f) num = 0.0f;
 	
 
 	player_->Update();
@@ -113,6 +116,7 @@ void GameScene::Update() {
 	debugText_->SetPos(50, 90);
 	debugText_->Printf("target:(%f,%f,%f)%d",
 		viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z,isDebugCamera);
+	
 }
 
 void GameScene::Draw() {
@@ -145,6 +149,22 @@ void GameScene::Draw() {
 	//3dモデル描画
 	player_->Draw(viewProjection_);
 	if(enemy_!=nullptr) enemy_->Draw(viewProjection_);
+
+	Vector3 v1 = { 10.0f,0,0 };
+	Vector3 v2 = { 0,10.0f,0 };
+	Vector3 v = { 0,0,0 };
+	debugText_->SetPos(50, 130);
+	debugText_->Printf("vecLerp:(%f,%f,%f)%d",
+		SlerpVector3(v1, v2, (num)).x,
+		SlerpVector3(v1, v2, (num)).y,
+		SlerpVector3(v1, v2, (num)).z);
+
+	PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,0,0 }, v1, { 0,1,0,1 });
+	PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,0,0 }, v2, { 0,0,1,1 });
+	PrimitiveDrawer::GetInstance()->DrawLine3d(v1, v2, { 1,1,1,1 });
+	Vector3 p = SlerpVector3(v1, v2, (num));
+	float p2 = v1.Dot(v2);
+	PrimitiveDrawer::GetInstance()->DrawLine3d(v, p, { 1,1,1,1 });
 
 
 	// 3Dオブジェクト描画後処理

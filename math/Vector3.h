@@ -17,7 +17,7 @@ class Vector3 {
 	  
 	float GetLength() const;
 	void Normalized();
-	const Vector3 GetNormalized();
+	Vector3 GetNormalized() const;
 	Vector3 Cross(const Vector3& other) const;
 	float Dot(const Vector3& other) const;
 

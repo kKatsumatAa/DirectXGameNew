@@ -55,6 +55,8 @@ class GameScene {
 	DirectXCommon* dxCommon_ = nullptr;
 	Audio* audio_ = nullptr;
 
+	float num = 0.0f;
+	
 
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0;

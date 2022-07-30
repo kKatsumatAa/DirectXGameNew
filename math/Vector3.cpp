@@ -11,7 +11,7 @@ void Vector3::Normalized()
     *this /= GetLength();
 }
 
-const Vector3 Vector3::GetNormalized()
+Vector3 Vector3::GetNormalized() const
 {
     Vector3 v;
     v = *this / GetLength();
@@ -19,7 +19,7 @@ const Vector3 Vector3::GetNormalized()
     return v;
 }
 
-Vector3 Vector3::Cross(const Vector3& other)const
+Vector3 Vector3::Cross(const Vector3& other) const
 {
     Vector3 v;
 
@@ -30,7 +30,7 @@ Vector3 Vector3::Cross(const Vector3& other)const
     return v;
 }
 
-float Vector3::Dot(const Vector3& other)const
+float Vector3::Dot(const Vector3& other) const
 {
     return x * other.x + y * other.y + z * other.z;
 }

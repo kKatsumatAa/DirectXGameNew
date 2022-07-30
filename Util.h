@@ -27,3 +27,8 @@ void UpdateWorldMatrix4(WorldTransform& world);
 const float pi = 3.141592f;
 float AngletoRadi(const float& angle);
 float RaditoAngle(const float& radian);
+float GetRadianVector3(const Vector3& v1, const Vector3& v2);
+
+//ê¸å`ï‚äÆ
+Vector3 LerpVector3(const Vector3& v1, const Vector3& v2, float t);
+Vector3 SlerpVector3(const Vector3& v1, const Vector3& v2, float t);
