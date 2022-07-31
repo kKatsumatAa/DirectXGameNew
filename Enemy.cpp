@@ -83,6 +83,10 @@ void Enemy::Fire()
 	newBullet->SetPlayer(player_);
 	//‹…‚ğ“o˜^
 	bullets_.push_back(std::move(newBullet));
+
+	//Õ“Ë‘®«
+	SetCollisionAttribute(kCollisionAttributeEnemy);
+	SetCollisionMask(kCollisionAttributePlayer);
 }
 
 void Enemy::ChangeState(EnemyState* state)

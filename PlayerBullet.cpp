@@ -12,6 +12,10 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vecto
 
 	worldTransform.Initialize();
 	worldTransform.translation_ = position;
+
+	//Õ“Ë‘®«
+	SetCollisionAttribute(kCollisionAttributePlayer);
+	SetCollisionMask(kCollisionAttributeEnemy);
 }
 
 void PlayerBullet::Update()

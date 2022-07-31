@@ -13,6 +13,10 @@ void Player::Initialize(Model* model, const uint32_t textureHandle)
 	debugText_ = DebugText::GetInstance();
 
 	worldTransform_.Initialize();
+
+	//Õ“Ë‘®«
+	SetCollisionAttribute(kCollisionAttributePlayer);
+	SetCollisionMask(kCollisionAttributeEnemy);
 }
 
 void Player::Update()

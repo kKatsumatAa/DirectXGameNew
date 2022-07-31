@@ -28,6 +28,10 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 	Vector3xMatrix4(v, m4, false);//‚±‚±‚Åã‰º‚ÌŠp“x‚ğ”½“]
 	//x²ü‚èŠp“x
 	worldTransform.rotation_.x = std::atan2(-v.y, v.z);
+
+	//Õ“Ë‘®«
+	SetCollisionAttribute(kCollisionAttributeEnemy);
+	SetCollisionMask(kCollisionAttributePlayer);
 }
 
 void EnemyBullet::Update()
