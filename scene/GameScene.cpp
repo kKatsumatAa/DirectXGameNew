@@ -234,7 +234,7 @@ void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB)
 	if (!(colliderA->GetCollisionAttribute() & colliderB->GetCollisionMask())
 		|| !(colliderA->GetCollisionAttribute() & colliderB->GetCollisionMask()))
 	{
-		return;
+		return;//判定、衝突処理せず抜ける
 	}
 
 	Vector3 posA = colliderA->GetWorldPos();
