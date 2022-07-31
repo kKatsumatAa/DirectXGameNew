@@ -218,6 +218,16 @@ void GameScene::CheckAllCollision()
 		CheckCollisionPair(enemy_, bullet.get());
 	}
 #pragma endregion
+
+#pragma region 自bulletと敵bulletの当たり判定
+	for (const std::unique_ptr<PlayerBullet>& bulletP : playerBullets)
+	{
+		for (const std::unique_ptr<EnemyBullet>& bulletE : enemyBullets)
+		{
+			CheckCollisionPair(bulletP.get(), bulletE.get());
+		}
+	}
+#pragma endregion
 }
 
 void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB)
