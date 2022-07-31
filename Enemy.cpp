@@ -143,6 +143,11 @@ Vector3 Enemy::GetWorldPos()
 	return Vector3(pos);
 }
 
+void Enemy::OnCollision()
+{
+	//‚È‚É‚à‚µ‚È‚¢
+}
+
 
 //----------------------------------------------
 void EnemyStateApproach::Update()

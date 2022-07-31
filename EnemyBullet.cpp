@@ -66,3 +66,13 @@ void EnemyBullet::Draw(const ViewProjection& viewProjection)
 {
 	model_->Draw(worldTransform, viewProjection, textureHandle_);
 }
+
+Vector3 EnemyBullet::GetWorldPos()
+{
+	return Vector3(worldTransform.translation_);
+}
+
+void EnemyBullet::OnCollision()
+{
+	isDead_ = true;
+}

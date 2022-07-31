@@ -98,3 +98,8 @@ Vector3 Player::GetWorldPos()
 
 	return Vector3(pos);
 }
+
+void Player::OnCollision()
+{
+	//‚È‚É‚à‚µ‚È‚¢
+}

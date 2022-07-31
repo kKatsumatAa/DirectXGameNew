@@ -32,3 +32,7 @@ float GetRadianVector3(const Vector3& v1, const Vector3& v2);
 //ê¸å`ï‚äÆ
 Vector3 LerpVector3(const Vector3& v1, const Vector3& v2, float t);
 Vector3 SlerpVector3(const Vector3& v1, const Vector3& v2, float t);
+
+//è’ìÀ
+bool CollisionCircleCircle(const Vector3& pos1, const float& r1,
+	const Vector3& pos2, const float& r2);

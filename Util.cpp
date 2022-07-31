@@ -194,3 +194,16 @@ Vector3 SlerpVector3(const Vector3& v1, const Vector3& v2, float t)
 
 	return v;
 }
+
+
+//-----------------------------------------------------------
+bool CollisionCircleCircle(const Vector3& pos1, const float& r1, const Vector3& pos2, const float& r2)
+{
+	if (pow(pos2.x - pos1.x, 2) + pow(pos2.y - pos1.y, 2) + pow(pos2.z - pos1.z, 2)
+		<= pow(r1 + r2, 2))
+	{
+		return true;
+	}
+
+	return false;
+}

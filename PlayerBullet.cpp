@@ -30,3 +30,13 @@ void PlayerBullet::Draw(const ViewProjection& viewProjection)
 {
 	model_->Draw(worldTransform, viewProjection, textureHandle_);
 }
+
+Vector3 PlayerBullet::GetWorldPos()
+{
+	return Vector3(worldTransform.translation_);
+}
+
+void PlayerBullet::OnCollision()
+{
+	isDead_ = true;
+}

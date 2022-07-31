@@ -24,4 +24,9 @@ public:
 	void Update();
 	void Draw(const ViewProjection& viewProjection);
 	bool IsDead() const { return isDead_; }
+
+	Vector3 GetWorldPos();
+
+	//衝突を検出したら呼び出す（コールバック関数）
+	void OnCollision();
 };

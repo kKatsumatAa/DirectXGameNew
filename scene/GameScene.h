@@ -45,6 +45,11 @@ class GameScene {
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// 衝突判定
+	/// </summary>
+	void CheckAllCollision();
+
 
 	//
 	Input* input_ = nullptr;

@@ -27,5 +27,10 @@ public:
 	void Draw(const ViewProjection& viewProjection);
 	bool IsDead() const { return isDead_; }
 	void SetPlayer(Player* player) { player_ = player; }
+
+	Vector3 GetWorldPos();
+
+	//衝突を検出したら呼び出す（コールバック関数）
+	void OnCollision();
 };
 

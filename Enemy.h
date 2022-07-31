@@ -77,6 +77,15 @@ public:
 	void SetPlayer(Player* player) { player_ = player;}
 
 	Vector3 GetWorldPos();
+
+	//衝突を検出したら呼び出す（コールバック関数）
+	void OnCollision();
+
+	//弾リストを取得(const参照)
+	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets()
+	{
+		return bullets_;
+	}
 };
 
 class EnemyStateApproach :public EnemyState

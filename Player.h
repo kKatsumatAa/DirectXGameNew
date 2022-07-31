@@ -33,4 +33,13 @@ public:
 	void Attack();
 
 	Vector3 GetWorldPos();
+
+	//衝突を検出したら呼び出す（コールバック関数）
+	void OnCollision();
+
+	//弾リストを取得
+	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets()
+	{
+		return bullets_;
+	}
 };
