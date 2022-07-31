@@ -7,11 +7,12 @@
 #include "Assert.h"
 #include "WinApp.h"
 #include "PlayerBullet.h"
+#include "Collider.h"
 
 /// <summary>
 /// 自キャラ
 /// </summary>
-class Player
+class Player : public Collider
 {
 private:
 	//ワールド変換データ
@@ -32,10 +33,10 @@ public:
 	void Draw(const ViewProjection& view);
 	void Attack();
 
-	Vector3 GetWorldPos();
+	Vector3 GetWorldPos() override;
 
 	//衝突を検出したら呼び出す（コールバック関数）
-	void OnCollision();
+	void OnCollision() override;
 
 	//弾リストを取得
 	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets()

@@ -18,6 +18,13 @@
 /// ゲームシーン
 /// </summary>
 class GameScene {
+private:
+	/// <summary>
+	/// コライダー二つの衝突判定と応答
+	/// </summary>
+	/// <param name="colliderA"></param>
+	/// <param name="colliderB"></param>
+	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 
   public: // メンバ関数
 	/// <summary>
@@ -50,8 +57,10 @@ class GameScene {
 	/// </summary>
 	void CheckAllCollision();
 
+	
+	
 
-	//
+	//papa
 	Input* input_ = nullptr;
 	DebugText* debugText_ = nullptr;
 

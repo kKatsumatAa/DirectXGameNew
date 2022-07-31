@@ -1,12 +1,12 @@
 #pragma once
 #include"Model.h"
-#include"Vector3.h"
 #include"ViewProjection.h"
 #include"WorldTransform.h"
 #include <cassert>
 #include "Util.h"
+#include "Collider.h"
 
-class PlayerBullet
+class PlayerBullet : public Collider
 {
 private:
 	WorldTransform worldTransform;
@@ -25,8 +25,8 @@ public:
 	void Draw(const ViewProjection& viewProjection);
 	bool IsDead() const { return isDead_; }
 
-	Vector3 GetWorldPos();
+	Vector3 GetWorldPos() override;
 
 	//衝突を検出したら呼び出す（コールバック関数）
-	void OnCollision();
+	void OnCollision() override;
 };

@@ -6,6 +6,8 @@
 
 #include <random>
 
+
+
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
@@ -193,52 +195,42 @@ void GameScene::Draw() {
 
 void GameScene::CheckAllCollision()
 {
-	Vector3 posA, posB;
-
 	const std::list<std::unique_ptr<PlayerBullet>>& playerBullets = player_->GetBullets();
 	const std::list<std::unique_ptr<EnemyBullet>>& enemyBullets = enemy_->GetBullets();
 
 #pragma region 自キャラと敵弾の当たり判定
-	posA = player_->GetWorldPos();
-
 	for (const std::unique_ptr<EnemyBullet>& bullet : enemyBullets)
 	{
-		posB = bullet->GetWorldPos();
-
-		if (CollisionCircleCircle(posA, 2.0f, posB, 2.0f))
-		{
-			player_->OnCollision();
-			bullet->OnCollision();
-		}
+		CheckCollisionPair(player_, bullet.get());
 	}
 #pragma endregion
 
 
 #pragma region 自キャラと敵の当たり判定
-	posA = player_->GetWorldPos();
-	posB = enemy_->GetWorldPos();
-
-	if (CollisionCircleCircle(posA, 2.0f, posB, 2.0f))
-	{
-		player_->OnCollision();
-		enemy_->OnCollision();
-	}
+	CheckCollisionPair(player_, enemy_);
 	
 #pragma endregion
 
 
 #pragma region 自bulletと敵の当たり判定
-	posA = enemy_->GetWorldPos();
-
 	for (const std::unique_ptr<PlayerBullet>& bullet : playerBullets)
 	{
-		posB = bullet->GetWorldPos();
-
-		if (CollisionCircleCircle(posA, 2.0f, posB, 2.0f))
-		{
-			enemy_->OnCollision();
-			bullet->OnCollision();
-		}
+		CheckCollisionPair(enemy_, bullet.get());
 	}
 #pragma endregion
+}
+
+void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB)
+{
+	Vector3 posA = colliderA->GetWorldPos();
+	Vector3 posB = colliderB->GetWorldPos();
+	
+	float rA = colliderA->GetRadius();
+	float rB = colliderB->GetRadius();
+
+	if (CollisionCircleCircle(posA, rA, posB, rB))
+	{
+		colliderA->OnCollision();
+		colliderB->OnCollision();
+	}
 }

@@ -9,6 +9,7 @@
 #include"EnemyBullet.h"
 #include"TimedCall.h"
 #include"Player.h"
+#include"Collider.h"
 
 //自機クラスの前方宣言(インクルードする代わりに)
 class Player;
@@ -28,7 +29,7 @@ public:
 ///<summary>
 ///敵
 ///</summary>
-class Enemy
+class Enemy : public Collider
 {
 	//変数
 private:
@@ -76,10 +77,10 @@ public:
 
 	void SetPlayer(Player* player) { player_ = player;}
 
-	Vector3 GetWorldPos();
+	Vector3 GetWorldPos() override;
 
 	//衝突を検出したら呼び出す（コールバック関数）
-	void OnCollision();
+	void OnCollision() override;
 
 	//弾リストを取得(const参照)
 	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets()
