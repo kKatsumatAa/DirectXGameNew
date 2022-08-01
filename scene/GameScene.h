@@ -13,18 +13,13 @@
 #include "Util.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "CollisionManager.h"
 
 /// <summary>
 /// ゲームシーン
 /// </summary>
 class GameScene {
 private:
-	/// <summary>
-	/// コライダー二つの衝突判定と応答
-	/// </summary>
-	/// <param name="colliderA"></param>
-	/// <param name="colliderB"></param>
-	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 
   public: // メンバ関数
 	/// <summary>
@@ -51,11 +46,6 @@ private:
 	/// 描画
 	/// </summary>
 	void Draw();
-
-	/// <summary>
-	/// 衝突判定
-	/// </summary>
-	void CheckAllCollision();
 
 	
 	
@@ -91,6 +81,8 @@ private:
 	//デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
 	bool isDebugCamera = false;
+
+	std::unique_ptr<CollisionManager> colliderManager = std::make_unique<CollisionManager>();
 	
 	/// <summary>
 	/// ゲームシーン用

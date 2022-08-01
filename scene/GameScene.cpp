@@ -74,8 +74,27 @@ void GameScene::Update() {
 	player_->Update();
 	if(enemy_!=nullptr) enemy_->Update();
 
-	CheckAllCollision();
-	
+	{//colliderManager
+
+		colliderManager->ClearList();
+		colliderManager->SetListCollider(player_);
+		colliderManager->SetListCollider(enemy_);
+		//bulletはそれ自体がlistなので特別
+		const std::list<std::unique_ptr<PlayerBullet>>& playerBullets = player_->GetBullets();
+		const std::list<std::unique_ptr<EnemyBullet>>& enemyBullets = enemy_->GetBullets();
+
+		for (const std::unique_ptr<PlayerBullet>& bullet : playerBullets)
+		{
+			colliderManager->SetListCollider(bullet.get());
+		}
+		for (const std::unique_ptr<EnemyBullet>& bullet : enemyBullets)
+		{
+			colliderManager->SetListCollider(bullet.get());
+		}
+
+		colliderManager->CheckAllCollisions();
+	}
+
 	//カメラ
 	if (isDebugCamera)//
 	{
@@ -87,24 +106,7 @@ void GameScene::Update() {
 	}
 	else
 	{
-		//const float kEyeSpeed = 0.2f;
-		//if (input_->PushKey(DIK_W)) viewProjection_.eye.z += kEyeSpeed;
-		//else if (input_->PushKey(DIK_S)) viewProjection_.eye.z -= kEyeSpeed;
-
-		//if (input_->PushKey(DIK_A)) viewProjection_.target.x -= kEyeSpeed;
-		//else if (input_->PushKey(DIK_D)) viewProjection_.target.x += kEyeSpeed;
-
-		////up回転
-		//const float kUprotSpeed = 0.05f;
-		//if (input_->PushKey(DIK_SPACE))
-		//{
-		//	viewAngle += kUprotSpeed;
-		//	viewAngle = fmodf(viewAngle, pi * 2.f);
-		//}
-		//viewProjection_.up = { cosf(viewAngle), sinf(viewAngle), 0.0f };
-
 		viewProjection_.UpdateMatrix();
-		//viewProjection_.TransferMatrix();
 	}
 
 	//デバッグ用表示
@@ -153,25 +155,6 @@ void GameScene::Draw() {
 	player_->Draw(viewProjection_);
 	if(enemy_!=nullptr) enemy_->Draw(viewProjection_);
 
-	/*Vector3 v1 = { 10.0f,0,0 };
-	Vector3 v2 = { 0,10.0f,0 };
-	Vector3 v = { 0,0,0 };
-
-	debugText_->SetPos(50, 130);
-	debugText_->Printf("vecLerp:(%f,%f,%f)%d",
-		SlerpVector3(v1, v2, (num)).x,
-		SlerpVector3(v1, v2, (num)).y,
-		SlerpVector3(v1, v2, (num)).z);
-
-	PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,0,0 }, v1, { 0,1,0,1 });
-	PrimitiveDrawer::GetInstance()->DrawLine3d({ 0,0,0 }, v2, { 0,0,1,1 });
-	PrimitiveDrawer::GetInstance()->DrawLine3d(v1, v2, { 1,1,1,1 });
-	Vector3 p = SlerpVector3(v1, v2, (num));
-	Vector3 p2 = LerpVector3(v1, v2, (num));
-	PrimitiveDrawer::GetInstance()->DrawLine3d(v, p, { 1,1,1,1 });
-	PrimitiveDrawer::GetInstance()->DrawLine3d(v, p2, { 1,1,0.5f,1 });*/
-
-
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -191,61 +174,4 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
-}
-
-void GameScene::CheckAllCollision()
-{
-	//bulletはそれ自体がlistなので特別
-	const std::list<std::unique_ptr<PlayerBullet>>& playerBullets = player_->GetBullets();
-	const std::list<std::unique_ptr<EnemyBullet>>& enemyBullets = enemy_->GetBullets();
-
-	//Colliderのリスト
-	std::list<Collider*> colliders_;
-	//リストに登録
-	colliders_.push_back(player_);
-	colliders_.push_back(enemy_);
-	//Collider* co=colliders_.
-	for (const std::unique_ptr<PlayerBullet>& bullet : playerBullets)
-	{
-		colliders_.push_back(bullet.get());
-	}
-	for (const std::unique_ptr<EnemyBullet>& bullet : enemyBullets)
-	{
-		colliders_.push_back(bullet.get());
-	}
-
-	//リスト内のペアを総当たり
-	std::list<Collider*>::iterator itrA = colliders_.begin();
-	for (; itrA != colliders_.end(); ++itrA)
-	{
-		//itrBはitrAの次の要素から回す（重複判定を回避）
-		std::list<Collider*>::iterator itrB = itrA;
-		itrB++;
-
-		for (; itrB != colliders_.end(); ++itrB)
-		{
-			CheckCollisionPair(*itrA, *itrB);
-		}
-	}
-}
-
-void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB)
-{
-	if (!(colliderA->GetCollisionAttribute() & colliderB->GetCollisionMask())
-		|| !(colliderA->GetCollisionAttribute() & colliderB->GetCollisionMask()))
-	{
-		return;//判定、衝突処理せず抜ける
-	}
-
-	Vector3 posA = colliderA->GetWorldPos();
-	Vector3 posB = colliderB->GetWorldPos();
-	
-	float rA = colliderA->GetRadius();
-	float rB = colliderB->GetRadius();
-
-	if (CollisionCircleCircle(posA, rA, posB, rB))
-	{
-		colliderA->OnCollision();
-		colliderB->OnCollision();
-	}
 }
