@@ -232,7 +232,7 @@ void GameScene::CheckAllCollision()
 void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB)
 {
 	if (!(colliderA->GetCollisionAttribute() & colliderB->GetCollisionMask())
-		|| !(colliderA->GetCollisionAttribute() & colliderB->GetCollisionMask()))
+		|| !(colliderB->GetCollisionAttribute() & colliderA->GetCollisionMask()))
 	{
 		return;//判定、衝突処理せず抜ける
 	}
