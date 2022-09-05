@@ -10,6 +10,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "DebugCamera.h"
+#include "CharacterManager.h"
 
 /// <summary>
 /// ゲームシーン
@@ -65,6 +66,13 @@ class GameScene {
 	int toNum = 0;
 	Vector3 toVec = { 0,0,0 };
 	bool move = false;
+
+	//
+	Player* player = new Player;
+	Enemy* enemy = new Enemy;
+
+	CharacterManager characterManager;
+
 
 	/// <summary>
 	/// ゲームシーン用

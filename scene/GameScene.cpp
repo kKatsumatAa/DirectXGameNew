@@ -59,6 +59,12 @@ void GameScene::Initialize() {
 	viewProjection_.target = { 0,0,0 };
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
+
+
+	player->Initialize(model_, textureHandle_);
+	enemy->Initialize(model_, textureHandle_);
+
+	characterManager.Initialize(player, enemy);
 }
 
 void GameScene::Update() {
@@ -86,6 +92,8 @@ void GameScene::Update() {
 	}
 	viewProjection_.UpdateMatrix();
 
+	characterManager.Update();
+
 	//デバッグ用表示
 	debugText_->SetPos(50, 50);
 	debugText_->Printf("target:(%f,%f,%f)", viewProjection_.target.x,
@@ -109,17 +117,6 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 	// 深度バッファクリア
 	dxCommon_->ClearDepthBuffer();
-
-	//ライン描画が参照するビュープロジェクションを指定する（アドレス渡し）
-	for (int x = 0; x < 31; x++)
-	{
-		PrimitiveDrawer::GetInstance()->DrawLine3d({ -30.f + 2.f * (float)x, 0, -30.f }, { -30.f + 2.f * (float)x, 0, 30.f }, { 0,0,0,1 });
-	}
-
-	for (int z = 0; z < 31; z++)
-	{
-		PrimitiveDrawer::GetInstance()->DrawLine3d({ -30.f, 0, -30.f + 2.f * (float)z }, { 30.f, 0, -30.0f + 2.f * (float)z }, { 0,0,0,1 });
-	}
 #pragma endregion
 
 #pragma region 3Dオブジェクト描画
@@ -130,10 +127,7 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	//3dモデル描画
-	for (size_t i = 0; i < _countof(worldTransforms_); i++)
-	{
-		model_->Draw(worldTransforms_[i], viewProjection_, textureHandle_);
-	}
+	characterManager.Draw(viewProjection_);
 	
 
 

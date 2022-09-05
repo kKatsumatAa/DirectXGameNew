@@ -98,9 +98,13 @@
     <ClCompile Include="base\DirectXCommon.cpp" />
     <ClCompile Include="base\TextureManager.cpp" />
     <ClCompile Include="base\WinApp.cpp" />
+    <ClCompile Include="CharacterManager.cpp" />
+    <ClCompile Include="Character.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math\Matrix4.cpp" />
     <ClCompile Include="math\Vector3.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
@@ -125,12 +129,16 @@
     <ClInclude Include="base\SafeDelete.h" />
     <ClInclude Include="base\TextureManager.h" />
     <ClInclude Include="base\WinApp.h" />
+    <ClInclude Include="CharacterManager.h" />
+    <ClInclude Include="Character.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="input\Input.h" />
     <ClInclude Include="math\MathUtility.h" />
     <ClInclude Include="math\Matrix4.h" />
     <ClInclude Include="math\Vector2.h" />
     <ClInclude Include="math\Vector3.h" />
     <ClInclude Include="math\Vector4.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="scene\GameScene.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
